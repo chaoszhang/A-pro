@@ -1,0 +1,29 @@
+.DS_Store
+*.swp
+*.class
+main/test_data/*
+<<<<<<< HEAD
+array*
+/ASTRALDATA
+estimated-gene-trees.tar.bz
+*.log
+pastOutput
+sb_files
+shellscripts
+Astral
+astral.4.10.10.jar
+astral.4.10.6.jar
+astral.4.10.7.jar
+astralcpu.4.10.8.jar
+newick-utils*
+main/gputest/*
+*.md
+ASTRAL_RESULTS/
+astralVersions/
+calculateWeightVersions/
+*.trees
+*.tre
+=======
+astral*jar
+>>>>>>> parallel
+old/*
