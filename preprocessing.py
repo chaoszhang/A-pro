@@ -3,14 +3,14 @@ import dendropy
 
 def printSubtree(v):
 	if v in children:
-		print v, children[v][0], children[v][1]
+		print(v, children[v][0], children[v][1])
 		for c in children[v]:
 			printSubtree(c)
 
 gene2species = {}
 
 with open(sys.argv[1], "r") as ins:
-	print len([None for line in ins])
+	print(len([None for line in ins]))
 
 if len(sys.argv) > 2:
 	with open(sys.argv[2], "r") as ins:
@@ -37,10 +37,10 @@ with open(sys.argv[1], "r") as ins:
 			s = v.label.replace(' ', '_')
 			name[hash(v)] = gene2species[s] if s in gene2species else s
 			
-		print len(name)
-		print len(children)
-		print hash(tree.seed_node)
+		print(len(name))
+		print(len(children))
+		print(hash(tree.seed_node))
 		for n in name:
-			print name[n], n
+			print(name[n], n)
 		printSubtree(hash(tree.seed_node))
 		#print(tree.as_ascii_plot())
