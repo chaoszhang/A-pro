@@ -3,7 +3,7 @@ ASTRAL for PaRalogs and Orthologs
 ## Required installations
 Java (>=1.7), Python 2.7 (with Dendropy), g++ or icc (supporting c++11 standard)
 
-If you have trouble with ASTRAL, co to `ASTRAL-MP` and run `bash make.sh`
+If you have trouble with ASTRAL, cd to `ASTRAL-MP` and run `bash make.sh`
 
 ## Input requirement
 The input gene trees must be in the Newick format, either multi-labelled (eg. ((SpeciesA,SpeciesB),(SpeciesA,SpeciesC));) or with gene-name-to-species-name mapping provided in the following format (eg. for ((GeneA1,GeneB1),(GeneA2,GeneC1));):
