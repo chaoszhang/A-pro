@@ -179,7 +179,7 @@ struct ClusterHashLinkedListNode{
 
 struct PartitionHash{
 	ClusterHash y, x0, x1;
-	shared_ptr<ClusterHashLinkedListNode> xs;
+	//shared_ptr<ClusterHashLinkedListNode> xs;
 	
 	PartitionHash(){}
 	
@@ -189,7 +189,7 @@ struct PartitionHash{
 		sort(xlist.begin(), xlist.end());
 		x0 = xlist[0];
 		x1 = xlist[1];
-		if (xlist.size() > 2){
+		/*if (xlist.size() > 2){
 			ClusterHashLinkedListNode *p = new ClusterHashLinkedListNode;
 			p->c = xlist[2];
 			xs.reset(p);
@@ -198,18 +198,18 @@ struct PartitionHash{
 				p = p->next;
 				p->c = xlist[i];
 			}
-		}
+		}*/
 	}
 	
 	bool operator == (const PartitionHash &p) const{
-		return y == p.y && x0 == p.x0 && x1 == p.x1 && *xs == *(p.xs);
+		return y == p.y && x0 == p.x0 && x1 == p.x1  ;//&& *xs == *(p.xs);
 	}
 	
 	size_t hash() const{
 		uint64_t res = y.h[0] + x0.h[0] * x0.h[1] + x1.h[0] * x1.h[1];
-		for (ClusterHashLinkedListNode* p = xs.get(); p != nullptr; p = p->next){
+		/*for (ClusterHashLinkedListNode* p = xs.get(); p != nullptr; p = p->next){
 			res += p->c.h[0] * p->c.h[1]; 
-		}
+		}*/
 		return res;
 	}
 };
@@ -217,9 +217,9 @@ struct PartitionHash{
 struct PartitionHasher{
 	size_t operator()(const PartitionHash &p) const{
 		uint64_t res = p.y.h[0] + p.x0.h[0] * p.x0.h[1] + p.x1.h[0] * p.x1.h[1];
-		for (ClusterHashLinkedListNode* q = p.xs.get(); q != nullptr; q = q->next){
+		/*for (ClusterHashLinkedListNode* q = p.xs.get(); q != nullptr; q = q->next){
 			res += q->c.h[0] * q->c.h[1]; 
-		}
+		}*/
 		return res;
 	}
 };
@@ -232,8 +232,8 @@ public:
 		unordered_set<PartitionHash, PartitionHasher> additions;
 		unordered_map<PartitionHash, int, PartitionHasher> partitions;
 		
-		void write(string file, const vector<string> &id2name) const{
-			ofstream fout(file);
+		void write(string TEXT, const vector<string> &id2name) const{
+			ofstream fout(TEXT);
 			fout << singletons.size() << endl;
 			for (const string &s: id2name) fout << s << endl;
 			unordered_map<ClusterHash, int, ClusterHasher> clusterId;
@@ -326,7 +326,7 @@ private:
 		int i = -1, j = -1;
 		vector<int> p, q;
 		
-		while (i != a.size() - 1 || j != b.size() - 1){
+		while (i + 1 != a.size() || j + 1 != b.size()){
 			
 			if (p.size() == 0 && q.size() == 0){
 				i++;
@@ -416,7 +416,10 @@ private:
 			ClusterHash lc = buildPolytreePre(left, nodeCluster, pt), rc = buildPolytreePre(right, nodeCluster, pt);
 			ClusterHash c = lc + rc;
 			if (!isRoot) pt.clusters.insert(c);
-			if (!isRoot) pt.additions.insert(PartitionHash(c, lc, rc));
+			if (!isRoot) { cerr << "+";
+				PartitionHash p(c, lc, rc);  cerr << "O";
+				pt.additions.insert(p);  cerr << "-";
+			}
 			return nodeCluster[cur] = c;
 		}
 	}
@@ -500,37 +503,77 @@ public:
 	}
 };
 
+unordered_map<string, string> leafname_mapping;
+string TEXT;
+long long nodecnt = 0;
+int pos = 0;
+
+string MAPPING(int begin, int end){
+	string s;
+	for (int i = begin; i < end && TEXT[i] != ':'; i++){
+		if (TEXT[i] != '\"' && TEXT[i] != '\'') s += TEXT[i];
+	}
+	if (leafname_mapping.count(s)) return leafname_mapping[s];
+	else return s;
+}
+
+long long parse(unordered_map<long long, string> &leafname, unordered_map<long long, pair<long long, long long> > &children){
+	int i = pos;
+	long long cur;
+	while (TEXT[pos] != '(' && TEXT[pos] != ',') pos++;
+	if (TEXT[pos] == '(') {
+		pos++;
+		cur = parse(leafname, children);
+		while (TEXT[pos] != ',') pos++;
+	}
+	else {
+		cur = nodecnt++;
+		leafname[cur] = MAPPING(i, pos);
+	}
+	while (TEXT[pos] != ')'){
+		i = ++pos;
+		while (TEXT[pos] != ')' && TEXT[pos] != '(' && TEXT[pos] != ',') pos++;
+		if (TEXT[pos] == '(') {
+			pos++;
+			long long left = cur, right = parse(leafname, children);
+			cur = nodecnt++;
+			children[cur] = {left, right};
+			while (TEXT[pos] != ',' && TEXT[pos] != ')') pos++;
+		}
+		else {
+			long long left = cur, right = nodecnt++;
+			leafname[right] = MAPPING(i, pos);
+			cur = nodecnt++;
+			children[cur] = {left, right};\
+		}
+	}
+	pos++;
+	return cur;
+}
+
 int main(int argc, char** argv) {
-	ifstream fin("genetrees.txt");
+	ifstream fin(argv[1]);
+	string line;
+	while (getline(fin, line)) TEXT += line;
 	ofstream fout("breaked_trees.tre");
 	ofstream fx("cluster_trees.tre");
-	int k;
-	fin >> k;
 	GenetreeAnnotator ga;
 	GenetreeAnnotator::Polytree pt;
-	for (int i = 0; i < k; i++){
-		int n, nc;
-		long long root;
-		fin >> n >> nc >> root;
-		unordered_map<long long, string> leafname;
-		unordered_map<long long, pair<long long, long long> > children;
-		for (int j = 0; j < n; j++){
-			long long node;
-			string name;
-			fin >> name >> node;
-			leafname[node] = name;
+	while (pos < TEXT.size()){
+		while (pos < TEXT.size() && TEXT[pos] != '(') pos++;
+		if (pos < TEXT.size()) {
+			pos++;
+			unordered_map<long long, string> leafname;
+			unordered_map<long long, pair<long long, long long> > children;
+			long long root = parse(leafname, children);
+			cerr << pos << " " << TEXT.size();
+			int iroot = ga.annotateTree(leafname, children, root);
+			ga.buildPolytree(iroot, pt);
+			
+			auto trees = ga.breakGenetree(iroot);
+			for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) fx << e.first << endl;
+			for (string s: sample(trees, 4)) if (count(s.begin(), s.end(), ',') >= 3) fout << s << endl;
 		}
-		for (int j = 0; j < nc; j++){
-			long long p, c1, c2;
-			fin >> p >> c1 >> c2;
-			children[p] = {c1, c2};
-		}
-		int iroot = ga.annotateTree(leafname, children, root);
-		ga.buildPolytree(iroot, pt);
-		
-		auto trees = ga.breakGenetree(iroot);
-		for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) fx << e.first << endl;
-		for (string s: sample(trees, 4)) if (count(s.begin(), s.end(), ',') >= 3) fout << s << endl;
 	}
 	pt.write("polytree.txt", ga.leafnames());
 	return 0;
