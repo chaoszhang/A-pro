@@ -544,7 +544,7 @@ long long parse(unordered_map<long long, string> &leafname, unordered_map<long l
 			long long left = cur, right = nodecnt++;
 			leafname[right] = MAPPING(i, pos);
 			cur = nodecnt++;
-			children[cur] = {left, right};\
+			children[cur] = {left, right};
 		}
 	}
 	pos++;
