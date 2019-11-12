@@ -26,6 +26,7 @@ public class Options {
 	private boolean removeExtraTree;
 	
 	private boolean ustarDist;
+	private boolean useNativeMethod;
 
 	public Options(boolean rooted, boolean extrarooted, 
 			boolean exactSolution, boolean duploss, int alg, int addExtra,
@@ -112,7 +113,6 @@ public class Options {
 	public void setBranchannotation(int branchannotation) {
 		this.branchannotation = branchannotation;
 	}
-
 	*/
 
 	public boolean isOutputCompletedGenes() {

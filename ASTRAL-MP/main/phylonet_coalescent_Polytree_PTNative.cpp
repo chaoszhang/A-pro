@@ -1,11 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cstring>
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include "phylonet_coalescent_Polytree_PTNative.h"
 #include "WeightCalculationInstructionGenerator.cpp"
+#include "GenetreeAnnotator.cpp"
 #include "x86intrin.h"
 
 #define NUM_BITS_IN_WORD 64
@@ -28,9 +30,11 @@ __attribute__((vector)) __attribute__ ((always_inline)) inline unsigned long lon
 struct Polytree{
 	int n = 0, listSize = 0, queueSize = 0, nWord = 0;
 	int* __restrict__ queue = nullptr;
+	stringstream* ptfile = nullptr;
 	
 	~Polytree(){
 		if (queue) delete queue;
+		if (ptfile) delete ptfile;
 	}
 	
 	void compute(unsigned long long* __restrict__ result, const unsigned long long* __restrict__ b) const{
@@ -94,14 +98,29 @@ struct Polytree{
 	
 } pt;
 
+JNIEXPORT jobjectArray JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppParse
+		(JNIEnv *env, jclass, jstring jinput, jstring jmapping){
+  	const char *cinput = env->GetStringUTFChars(jinput, NULL);
+	string input(cinput);
+	env->ReleaseStringUTFChars(jinput, cinput);
+	const char *cmapping = env->GetStringUTFChars(jmapping, NULL);
+	string mapping(cmapping);
+	env->ReleaseStringUTFChars(jmapping, cmapping);
+	
+	tuple<string, string, stringstream*> result = annotate(input, mapping);
+	
+	pt.ptfile = get<2>(result);
+	jobjectArray ret = (jobjectArray)env->NewObjectArray(2, env->FindClass("java/lang/String"),env->NewStringUTF(""));
+
+    env->SetObjectArrayElement(ret, 0, env->NewStringUTF(get<1>(result).c_str()));
+	env->SetObjectArrayElement(ret, 1, env->NewStringUTF(get<0>(result).c_str()));
+    return(ret);
+}
+
 JNIEXPORT void JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppInit
-		(JNIEnv *env, jclass, jobjectArray jnames, jstring jfile){
+		(JNIEnv *env, jclass, jobjectArray jnames){
 	//cerr << "Hello World!" << endl;
 	unordered_map<string, int> name2id;
-	
-	const char *cfile = env->GetStringUTFChars(jfile, NULL);
-	string file(cfile);
-	env->ReleaseStringUTFChars(jfile, cfile);
 	pt.n = env->GetArrayLength(jnames);
 	pt.nWord = (pt.n + 63) / 64;
 	//cerr << "n = " << pt.n << "nword = " << pt.nWord << endl;
@@ -114,7 +133,7 @@ JNIEXPORT void JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppInit
 		env->ReleaseStringUTFChars(jname, cname);
 	}
 	
-	ifstream fin(file);
+	stringstream& fin(*pt.ptfile);
 	int numId, numCluster, numSum, numScore;
 	fin >> numId;
 	//cerr << "numId = " << numId << endl;

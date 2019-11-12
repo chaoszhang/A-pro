@@ -36,7 +36,7 @@ public:
 	 * sourceLocations: vector contains x values
 	 */
 	void addClusterSizes(const int targetLocation, const vector<int> sourceLocations){
-		cerr << targetLocation << " <- " << transencode(sourceLocations[0]) << " + " << transencode(sourceLocations[1]) << endl;
+		//cerr << targetLocation << " <- " << transencode(sourceLocations[0]) << " + " << transencode(sourceLocations[1]) << endl;
 		inst.push_back(~targetLocation);
 		inst.push_back(transencode(sourceLocations[0]));
 		inst.push_back(transencode(sourceLocations[1]));
@@ -45,7 +45,7 @@ public:
 			inst.push_back(targetLocation);
 			inst.push_back(transencode(sourceLocations[i]));
 		}
-		cerr << inst.size() << endl;
+		//cerr << inst.size() << endl;
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public:
 	}    
 
 	const vector<int>& getInstruction() const{
-		for (int i: inst) cerr << i << " ";
+		//for (int i: inst) cerr << i << " ";
 		return inst;
 	}
 };

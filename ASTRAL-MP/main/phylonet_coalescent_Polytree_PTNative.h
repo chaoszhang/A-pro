@@ -11,11 +11,19 @@ extern "C" {
 #define phylonet_coalescent_Polytree_PTNative_batchSize 32L
 /*
  * Class:     phylonet_coalescent_Polytree_PTNative
+ * Method:    cppParse
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppParse
+  (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     phylonet_coalescent_Polytree_PTNative
  * Method:    cppInit
- * Signature: ([Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: ([Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppInit
-  (JNIEnv *, jclass, jobjectArray, jstring);
+  (JNIEnv *, jclass, jobjectArray);
 
 /*
  * Class:     phylonet_coalescent_Polytree_PTNative

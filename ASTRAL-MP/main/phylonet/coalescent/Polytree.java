@@ -218,8 +218,8 @@ public class Polytree {
 	public static final class PTNative{
 		private static final int batchSize = 32;
 		
-
-		static native void cppInit(String[] taxonNames, String geneTreeFile);
+		static native String[] cppParse(String inputFile, String mappingFile);
+		static native void cppInit(String[] taxonNames);
 		static native void cppBatchCompute(long[] result, long[][] a, long[][] b, long[][] c);
 	}
 	
@@ -232,20 +232,11 @@ public class Polytree {
 	int[] queue;
 	int listSize = 0;
 	long maxScore = 0;
-	private boolean useNativeMethod;
+	
+	private boolean useNativeMethod = true;
 	
 	public Polytree(List<Tree> trees, WQDataCollection dataCollection){
-		try {
-			System.loadLibrary("Astral");
-			useNativeMethod = true;
-			PTNative.cppInit(GlobalMaps.taxonIdentifier.getAllTaxonNames(), "polytree.txt");
-			System.err.println("Using native AVX batch computing method.");
-		}
-		catch (Throwable e) {
-			useNativeMethod = false;
-			//e.printStackTrace(); 
-			System.err.println("Fail to load native library "+System.mapLibraryName("Astral")+"; use Java default computing method.");
-		}
+		PTNative.cppInit(GlobalMaps.taxonIdentifier.getAllTaxonNames());
 		
 		this.dataCollection = dataCollection;
 		long t = System.currentTimeMillis();

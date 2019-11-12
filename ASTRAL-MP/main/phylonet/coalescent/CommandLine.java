@@ -50,6 +50,8 @@ import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 
+import phylonet.coalescent.Polytree;
+
 public class CommandLine {
 	protected static String _version = "5.14.2";
 	protected static SimpleJSAP jsap;
@@ -71,12 +73,12 @@ public class CommandLine {
 						+ " the collection of all gene trees. The result of this optimization problem"
 						+ " is statistically consistent under the multi-species coalescent model."
 						+ " This software can also solve MGD and MGDL problems (see options) instead of ASTRAL.",
-				new Parameter[] { new FlaggedOption("input file", FileStringParser.getParser().setMustExist(true), null,
+				new Parameter[] { new FlaggedOption("input file", JSAP.STRING_PARSER, null,
 						JSAP.REQUIRED, 'i', "input", "a file containing input gene trees in newick format. (required)"),
 						new FlaggedOption("output file", FileStringParser.getParser(), null, JSAP.NOT_REQUIRED, 'o',
 								"output",
 								"a filename for storing the output species tree. Defaults to outputting to stdout."),
-						new Switch("cpu only", 'C', "cpu-only", "Do not use GPUs."),
+						//new Switch("cpu only", 'C', "cpu-only", "Do not use GPUs."),
 						new FlaggedOption("cpu threads", JSAP.INTEGER_PARSER, "-1", JSAP.NOT_REQUIRED, 'T',
 								"cpu-threads", "Number of threads to use. "),
 						new Switch("internode-dist", 'A', "internode",
@@ -121,7 +123,7 @@ public class CommandLine {
 										+ "lengths instead of MAP."
 										+ " Higher values tend to shorten estimated branch lengths and very"
 										+ " high values can give inaccurate results (or even result in underflow)."),
-						new FlaggedOption("mapping file", FileStringParser.getParser().setMustExist(true), null,
+						new FlaggedOption("mapping file", JSAP.STRING_PARSER, null,
 								JSAP.NOT_REQUIRED, 'a', "namemapfile",
 								"a file containing the mapping between names in gene tree and names in the species tree. "
 										+ "The mapping file has one line per species, with one of two formats:\n"
@@ -178,7 +180,7 @@ public class CommandLine {
 	}
 
 	static Options readOptions(int criterion, boolean rooted, boolean extrarooted, double wh, JSAPResult config,
-			List<Tree> mainTrees, List<List<String>> bootstrapInputSets) throws JSAPException, IOException {
+			List<Tree> mainTrees, List<Tree> extraTrees, List<List<String>> bootstrapInputSets) throws JSAPException, IOException {
 		Map<String, String> taxonMap = null;
 		String replace = null;
 		String pattern = null;
@@ -209,6 +211,7 @@ public class CommandLine {
 		if (config.getBoolean("duplication") && config.contains("duploss weight")) {
 			exitWithErr("dup and duploss options cannot be used together. Choose only one. ");
 		}
+		/*
 		// johng23
 		if (!config.getBoolean("cpu only")) {
 			try {
@@ -270,6 +273,7 @@ public class CommandLine {
 				Threading.usedDevices = null;
 			}
 		}
+		*/
 		int numThreads = config.getInt("cpu threads");
 		if (numThreads == -1) {
 			numThreads = Runtime.getRuntime().availableProcessors();
@@ -280,6 +284,7 @@ public class CommandLine {
 			System.err.println("Timer starts here");
 			Logging.timer = System.currentTimeMillis();
 		}
+		/*
 		if (config.getFile("mapping file") != null) {
 			BufferedReader br = new BufferedReader(new FileReader(config.getFile("mapping file")));
 			taxonMap = new HashMap<String, String>();
@@ -325,16 +330,19 @@ public class CommandLine {
 						"\n** Error **: Your name mapping file looks incorrect.\n   Carefully check its format. ", e);
 			}
 			br.close();
-		}
+		}*/
 		minleaves = config.contains("minleaves") ? config.getInt("minleaves") : null;
 		samplingrounds = config.contains("samplingrounds") ? config.getInt("samplingrounds") : null;
 		polylimit = config.contains("polylimit") ? config.getInt("polylimit") : null;
+		
+		String[] breakedTrees = null;
 		try {
 			// GlobalMaps.taxonIdentifier.taxonId("0");
 			// System.err.println("Main input file: "+config.getFile("input file"));
-			readInputTrees(mainTrees, readTreeFileAsString(config.getFile("input file")), rooted, true, false,
+			breakedTrees = Polytree.PTNative.cppParse(config.getString("input file"), config.getString("mapping file") == null ? "" : config.getString("mapping file"));
+			readInputTrees(mainTrees, readTreeFileAsString(breakedTrees[0]), rooted, true, false,
 					minleaves, config.getInt("branch annotation level"), null);
-			System.err.println(mainTrees.size() + " trees read from " + config.getFile("input file"));
+			System.err.println(mainTrees.size() + " trees read from " + config.getString("input file"));
 			GlobalMaps.taxonIdentifier.lock();
 			Logging.logTimeMessage("");
 		} catch (IOException e) {
@@ -356,6 +364,23 @@ public class CommandLine {
 		} else {
 			GlobalMaps.taxonNameMap = new TaxonNameMap();
 		}
+		
+		try{
+			if (config.getFile("extra trees") != null) {
+				readInputTrees(extraTrees, readTreeFileAsString(config.getFile("extra trees")), extrarooted, true,
+						false, null, 1, null);
+				System.err.println(extraTrees.size() + " extra trees read from " + config.getFile("extra trees"));
+			}
+			readInputTrees(extraTrees, readTreeFileAsString(breakedTrees[1]), extrarooted,
+					true, true, null, 1, null);
+			System.err.println(extraTrees.size() + " extra trees.");
+		} catch (IOException e) {
+			System.err.println("Error when reading extra trees.");
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		if (config.getStringArray("keep") != null && config.getStringArray("keep").length != 0) {
 			if (outfileName == null) {
 				throw new JSAPException("When -k option is used, -o is also needed.");
@@ -458,6 +483,7 @@ public class CommandLine {
 		boolean extrarooted = false;
 		double wh = 1.0D;
 		List<Tree> mainTrees = new ArrayList<Tree>();
+		List<Tree> extraTrees = new ArrayList<Tree>();
 		List<List<String>> bootstrapInputSets = new ArrayList<List<String>>();
 		BufferedWriter outbuffer;
 		System.err.println("\n================== ASTRAL ===================== \n");
@@ -466,9 +492,8 @@ public class CommandLine {
 			System.loadLibrary("Astral");
 			System.err.println("Using native AVX batch computing.");
 		} catch (Throwable e) {
-			// e.printStackTrace();
-			System.err.println("Warning: \n Fail to load native library " + System.mapLibraryName("Astral")
-					+ "; use Java default computing method without AVX2, which is 4X slower. \n"
+			exitWithErr("Error: \n Fail to load native library " + System.mapLibraryName("Astral") + ". \n"
+					//+ "; use Java default computing method without AVX2, which is 4X slower. \n"
 					+ " Make sure you are using the correct Djava.library.path (to the `lib` directory under ASTRAL where "
 					+ System.mapLibraryName("Astral") + " can be found). \n"
 					+ " Trying running make.sh. For mode debugging, run: java -Djava.library.path=lib/ -jar native_library_tester.jar");
@@ -502,7 +527,7 @@ public class CommandLine {
 		}
 		System.err.println("Gene trees are treated as " + (rooted ? "rooted" : "unrooted"));
 		GlobalMaps.random = new Random(config.getLong("seed"));
-		Options options = readOptions(criterion, rooted, extrarooted, wh, config, mainTrees, bootstrapInputSets);
+		Options options = readOptions(criterion, rooted, extrarooted, wh, config, mainTrees, extraTrees, bootstrapInputSets);
 		File outfile = config.getFile("output file");
 		if (outfile == null) {
 			outbuffer = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -564,16 +589,6 @@ public class CommandLine {
 		List<Tree> extraTrees = new ArrayList<Tree>();
 		List<Tree> toRemoveExtraTrees = new ArrayList<Tree>();
 		try {
-			if (config.getFile("extra trees") != null) {
-				readInputTrees(extraTrees, readTreeFileAsString(config.getFile("extra trees")), extrarooted, true,
-						false, null, 1, null);
-				System.err.println(extraTrees.size() + " extra trees read from " + config.getFile("extra trees"));
-			}
-			if (config.getFile("extra species trees") != null) {
-				readInputTrees(extraTrees, readTreeFileAsString(config.getFile("extra species trees")), extrarooted,
-						true, true, null, 1, null);
-				System.err.println(extraTrees.size() + " extra trees read from " + config.getFile("extra trees"));
-			}
 			if (config.getFile("remove extra tree bipartitions") != null) {
 				readInputTrees(toRemoveExtraTrees,
 						readTreeFileAsString(config.getFile("remove extra tree bipartitions")), true, true, true, null,
@@ -665,7 +680,18 @@ public class CommandLine {
 		}
 		return inference;
 	}
-
+	
+	private static List<String> readTreeFileAsString(String file) throws FileNotFoundException, IOException {
+		List<String> trees = new ArrayList<String>();
+		for (String line: file.split("\\r?\\n")) {
+			if (line.length() > 0) {
+				line = line.replaceAll("\\)[^,);]*", ")");
+				trees.add(line);
+			}
+		}
+		return trees;
+	}
+	
 	private static List<String> readTreeFileAsString(File file) throws FileNotFoundException, IOException {
 		String line;
 		List<String> trees = new ArrayList<String>();
