@@ -44,7 +44,7 @@ import phylonet.tree.model.sti.STITree;
 import phylonet.tree.util.Trees;
 
 public class CommandLine {
-	protected static String _version = "1.1.0";
+	protected static String _version = "1.1.1";
 	protected static SimpleJSAP jsap;
 
 	private static void exitWithErr(String extraMessage) {
@@ -532,7 +532,7 @@ public class CommandLine {
 			toScore = readTreeFileAsString(config.getFile("score species trees"));
 			runScore(criterion, rooted, mainTrees, outbuffer, options, outgroup, toScore);
 		} else {
-			runInference(config, criterion, rooted, extrarooted, mainTrees, outbuffer, bootstrapInputSets, options,
+			runInference(config, criterion, rooted, extrarooted, mainTrees, extraTrees, outbuffer, bootstrapInputSets, options,
 					outgroup);
 		}
 		Threading.shutdown();
@@ -574,10 +574,9 @@ public class CommandLine {
 	}
 
 	private static void runInference(JSAPResult config, int criterion, boolean rooted, boolean extrarooted,
-			List<Tree> mainTrees, BufferedWriter outbuffer, List<List<String>> bootstrapInputSets, Options options,
+			List<Tree> mainTrees, List<Tree> extraTrees, BufferedWriter outbuffer, List<List<String>> bootstrapInputSets, Options options,
 			String outgroup) throws JSAPException, IOException, FileNotFoundException {
 		System.err.println("All output trees will be *arbitrarily* rooted at " + outgroup);
-		List<Tree> extraTrees = new ArrayList<Tree>();
 		List<Tree> toRemoveExtraTrees = new ArrayList<Tree>();
 		try {
 			if (config.getFile("remove extra tree bipartitions") != null) {

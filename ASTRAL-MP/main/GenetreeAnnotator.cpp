@@ -564,6 +564,7 @@ tuple<string, string, stringstream*> annotate(string input, string mapping) {
 	stringstream* spoly = new stringstream();
 	GenetreeAnnotator ga;
 	GenetreeAnnotator::Polytree pt;
+	int cnt = 0;
 	while (pos < TEXT.size()){
 		while (pos < TEXT.size() && TEXT[pos] != '(') pos++;
 		if (pos < TEXT.size()) {
@@ -573,12 +574,13 @@ tuple<string, string, stringstream*> annotate(string input, string mapping) {
 			long long root = parse(leafname, children);
 			int iroot = ga.annotateTree(leafname, children, root);
 			ga.buildPolytree(iroot, pt);
-			
+			cnt++;
 			auto trees = ga.breakGenetree(iroot);
 			for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) sx += e.first + "\n";
 			for (string s: sample(trees, 4)) if (count(s.begin(), s.end(), ',') >= 3) sout += s + "\n";
 		}
 	}
+	cerr << "The number of input tree read is " << cnt << endl;
 	pt.write(*spoly, ga.leafnames());
 	return make_tuple(sx, sout, spoly);
 }
