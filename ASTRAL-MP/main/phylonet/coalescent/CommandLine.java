@@ -1,13 +1,7 @@
 package phylonet.coalescent;
 
-import static org.jocl.CL.CL_CONTEXT_PLATFORM;
-import static org.jocl.CL.CL_DEVICE_NAME;
-import static org.jocl.CL.CL_DEVICE_TYPE_ALL;
-import static org.jocl.CL.CL_DEVICE_VENDOR;
-import static org.jocl.CL.clCreateContext;
-import static org.jocl.CL.clGetDeviceIDs;
 import static org.jocl.CL.clGetDeviceInfo;
-import static org.jocl.CL.clGetPlatformIDs;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,7 +14,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -29,18 +22,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
-import org.jocl.CL;
+
 import org.jocl.Pointer;
-import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
-import org.jocl.cl_platform_id;
-import phylonet.tree.io.NewickReader;
-import phylonet.tree.io.ParseException;
-import phylonet.tree.model.MutableTree;
-import phylonet.tree.model.TNode;
-import phylonet.tree.model.Tree;
-import phylonet.tree.model.sti.STITree;
-import phylonet.tree.util.Trees;
+
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
@@ -50,10 +35,16 @@ import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 
-import phylonet.coalescent.Polytree;
+import phylonet.tree.io.NewickReader;
+import phylonet.tree.io.ParseException;
+import phylonet.tree.model.MutableTree;
+import phylonet.tree.model.TNode;
+import phylonet.tree.model.Tree;
+import phylonet.tree.model.sti.STITree;
+import phylonet.tree.util.Trees;
 
 public class CommandLine {
-	protected static String _version = "5.14.2";
+	protected static String _version = "1.1.0";
 	protected static SimpleJSAP jsap;
 
 	private static void exitWithErr(String extraMessage) {
@@ -67,12 +58,12 @@ public class CommandLine {
 	}
 
 	private static SimpleJSAP getJSAP() throws JSAPException {
-		return new SimpleJSAP("ASTRAL (version" + _version + ")",
+		return new SimpleJSAP("ASTRAL-Pro (version" + _version + ")",
 				"species tree inference from unrooted gene trees. "
-						+ "The ASTRAL algorithm maximizes the number of shared quartet trees with"
+						+ "The ASTRAL-Pro algorithm maximizes the number of shared quartet trees with"
 						+ " the collection of all gene trees. The result of this optimization problem"
 						+ " is statistically consistent under the multi-species coalescent model."
-						+ " This software can also solve MGD and MGDL problems (see options) instead of ASTRAL.",
+						+ " This software can also solve MGD and MGDL problems (see options) instead of ASTRAL-Pro.",
 				new Parameter[] { new FlaggedOption("input file", JSAP.STRING_PARSER, null,
 						JSAP.REQUIRED, 'i', "input", "a file containing input gene trees in newick format. (required)"),
 						new FlaggedOption("output file", FileStringParser.getParser(), null, JSAP.NOT_REQUIRED, 'o',
@@ -85,7 +76,7 @@ public class CommandLine {
 								"USe NJst-like internode distances instead of quartet distance for building the search space (X). Unpublished work. "),
 						new FlaggedOption("score species trees", FileStringParser.getParser().setMustExist(true), null,
 								JSAP.NOT_REQUIRED, 'q', "score-tree", "score the provided species tree and exit"),
-						new FlaggedOption("branch annotation level", JSAP.INTEGER_PARSER, "3", JSAP.NOT_REQUIRED, 't',
+						new FlaggedOption("branch annotation level", JSAP.INTEGER_PARSER, "0", JSAP.NOT_REQUIRED, 't',
 								"branch-annotate",
 								"How much annotations should be added to each branch: 0, 1, or 2. \n"
 										+ "0: no annotations. \n"
@@ -141,12 +132,12 @@ public class CommandLine {
 						new FlaggedOption("polylimit", JSAP.INTEGER_PARSER, null, JSAP.NOT_REQUIRED, JSAP.NO_SHORTFLAG,
 								"polylimit",
 								"Sets a limit for size of polytomies in greedy consensus trees where O(n) number"
-										+ " of new  resolutions are added. ASTRAL-III sets automatic limits to guarantee polynomial"
+										+ " of new  resolutions are added. ASTRAL-Pro-III sets automatic limits to guarantee polynomial"
 										+ " time running time."),
 						new Switch("duplication", JSAP.NO_SHORTFLAG, "dup",
 								"Solves MGD problem. Minimizes the number duplications required to explain "
 										+ "gene trees using DynaDup algorithm (Bayzid, 2011). Note that with this option, "
-										+ "DynaDyp would be used *instead of* ASTRAL."),
+										+ "DynaDyp would be used *instead of* ASTRAL-Pro."),
 						new Switch("exact", 'x', "exact",
 								"find the exact solution by looking at all clusters - recommended only for small (<18) number of taxa."),
 						new FlaggedOption("extraLevel", JSAP.INTEGER_PARSER, "1", JSAP.NOT_REQUIRED, 'p', "extraLevel",
@@ -173,7 +164,7 @@ public class CommandLine {
 						new FlaggedOption("duploss weight", JSAP.STRING_PARSER, null, JSAP.NOT_REQUIRED, 'l', "duploss",
 								"Solves MGDL problem. Minimizes the number duplication and losses required"
 										+ " to explain gene trees using DynaDup algorithm. Note that with this option, "
-										+ "DynaDyp would be used *instead of* ASTRAL. "
+										+ "DynaDyp would be used *instead of* ASTRAL-Pro. "
 										+ "Use -l 0 for standard (homomorphic) definition, and -l 1 for our new bd definition. "
 										+ "Any value in between weights the impact of missing taxa somewhere between these two extremes. "
 										+ "-l auto will automatically pick this weight. "), });
@@ -478,7 +469,7 @@ public class CommandLine {
 	public static void main(String[] args) throws Exception {
 		long startTime = System.currentTimeMillis();
 		JSAPResult config;
-		int criterion = 2; // 2 for ASTRAL, 0 for dup, 1 for duploss
+		int criterion = 2; // 2 for ASTRAL-Pro, 0 for dup, 1 for duploss
 		boolean rooted = false;
 		boolean extrarooted = false;
 		double wh = 1.0D;
@@ -486,15 +477,15 @@ public class CommandLine {
 		List<Tree> extraTrees = new ArrayList<Tree>();
 		List<List<String>> bootstrapInputSets = new ArrayList<List<String>>();
 		BufferedWriter outbuffer;
-		System.err.println("\n================== ASTRAL ===================== \n");
-		System.err.println("This is ASTRAL version " + _version);
+		System.err.println("\n================== ASTRAL-Pro ===================== \n");
+		System.err.println("This is ASTRAL-Pro (A-Pro) version " + _version);
 		try {
 			System.loadLibrary("Astral");
 			System.err.println("Using native AVX batch computing.");
 		} catch (Throwable e) {
 			exitWithErr("Error: \n Fail to load native library " + System.mapLibraryName("Astral") + ". \n"
 					//+ "; use Java default computing method without AVX2, which is 4X slower. \n"
-					+ " Make sure you are using the correct Djava.library.path (to the `lib` directory under ASTRAL where "
+					+ " Make sure you are using the correct Djava.library.path (to the `lib` directory under ASTRAL-Pro where "
 					+ System.mapLibraryName("Astral") + " can be found). \n"
 					+ " Trying running make.sh. For mode debugging, run: java -Djava.library.path=lib/ -jar native_library_tester.jar");
 		}
@@ -507,7 +498,7 @@ public class CommandLine {
 			criterion = 0;
 			rooted = true;
 			extrarooted = true;
-			System.err.println("Using DynaDup application, minimizing MGD (not ASTRAL).");
+			System.err.println("Using DynaDup application, minimizing MGD (not ASTRAL-Pro).");
 		}
 		if (config.contains("duploss weight")) {
 			criterion = 1;
@@ -523,7 +514,7 @@ public class CommandLine {
 				}
 				;
 			}
-			System.err.println("Using DynaDup application, minimizing MGDL (not ASTRAL).");
+			System.err.println("Using DynaDup application, minimizing MGDL (not ASTRAL-Pro).");
 		}
 		System.err.println("Gene trees are treated as " + (rooted ? "rooted" : "unrooted"));
 		GlobalMaps.random = new Random(config.getLong("seed"));
@@ -545,7 +536,7 @@ public class CommandLine {
 					outgroup);
 		}
 		Threading.shutdown();
-		System.err.println("ASTRAL finished in " + (System.currentTimeMillis() - startTime) / 1000.0D + " secs");
+		System.err.println("ASTRAL-Pro finished in " + (System.currentTimeMillis() - startTime) / 1000.0D + " secs");
 	}
 
 	private static void runScore(int criterion, boolean rooted, List<Tree> mainTrees, BufferedWriter outbuffer,
