@@ -17,9 +17,9 @@ GeneC1 SpeciesC
 ## Running A-pro
 cd to `ASTRAL-MP` and run for multi-labelled gene trees:
 ```
-java -D"java.library.path=lib/" -jar astral.5.14.2.jar -i input -o output
+java -D"java.library.path=lib/" -jar astral.<version_number>.jar -i input -o output
 ```
 cd to `ASTRAL-MP` and run for gene trees with gene-name-to-species-name mapping provided:
 ```
-java -D"java.library.path=lib/" -jar astral.5.14.2.jar -i input -a mapping -o output
+java -D"java.library.path=lib/" -jar astral.<version_number>.jar -i input -a mapping -o output
 ```
