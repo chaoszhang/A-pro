@@ -33,6 +33,22 @@ JNIEXPORT void JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppInit
 JNIEXPORT void JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppBatchCompute
   (JNIEnv *, jclass, jlongArray, jobjectArray, jobjectArray, jobjectArray);
 
+/*
+ * Class:     phylonet_coalescent_Polytree_PTNative
+ * Method:    cppCountEqClass
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppCountEqClass
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     phylonet_coalescent_Polytree_PTNative
+ * Method:    cppSupport
+ * Signature: ([J[J[J[J)J
+ */
+JNIEXPORT jlong JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppSupport
+  (JNIEnv *, jclass, jlongArray, jlongArray, jlongArray, jlongArray);
+
 #ifdef __cplusplus
 }
 #endif

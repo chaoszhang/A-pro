@@ -96,6 +96,70 @@ struct Polytree{
 		}//cerr << "result = " << result[0] << endl;
 	}
 	
+	unsigned long long count(){
+		unsigned long long* lst = new unsigned long long[listSize]{};
+		unsigned long long weight = 0;
+		
+		for (int i = 0; i < n; i++){
+			lst[i] = 1;
+		}
+		
+		for (int i = 0; i < queueSize; i++){
+			int cmd = queue[i];
+			if (cmd >= 0) {
+				int y = lst[cmd], x1 = lst[queue[++i]], x2 = lst[queue[++i]], c = queue[++i];
+				if (c == 1) {
+					weight += x1 * (x1 - 1) * x2 * (x2 - 1) / 2 + x1 * x2 * y * (x1 + x2 - 2);
+				}
+				else {
+					weight += c * (x1 * (x1 - 1) * x2 * (x2 - 1) / 2 + x1 * x2 * y * (x1 + x2 - 2));
+				}
+			}
+			else{
+				int cmd2 = queue[++i];
+				int y = ~cmd, x1 = cmd2, x2 = queue[++i];
+				lst[y] = lst[x1] + lst[x2];
+			}
+		}
+		delete lst;
+		return weight;
+	}
+	
+	unsigned long long support(const unsigned long long* __restrict__ b) const{
+		unsigned long long (*lst)[4] = new unsigned long long[listSize][4]{};
+		unsigned long long weight = 0;
+		
+		for (int i = 0; i < n; i++){
+			for (int j = 0; j < 4; j++){
+				lst[i][j] = (b[j * nWord + i / NUM_BITS_IN_WORD] & (1LL << (i % NUM_BITS_IN_WORD))) ? 1 : 0;
+			}
+		}
+		
+		for (int i = 0; i < queueSize; i++){
+			int cmd = queue[i];
+			if (cmd >= 0) {
+				int y = cmd, x1 = queue[++i], x2 = queue[++i], c = queue[++i];
+				unsigned long long x1a = lst[x1][0], x1b = lst[x1][1], x1c = lst[x1][2], x1d = lst[x1][3],
+						x2a = lst[x2][0], x2b = lst[x2][1], x2c = lst[x2][2], x2d = lst[x2][3],
+						ya = lst[y][0], yb = lst[y][1], yc = lst[y][2], yd = lst[y][3];
+				if (c == 1) {
+					weight += x1a*x1b*x2c*x2d + x1c*x1d*x2a*x2b + x1a*x1b*(x2c*yd+yc*x2d) + x1c*x1d*(x2a*yb+ya*x2b) + x2a*x2b*(x1c*yd+yc*x1d) + x2c*x2d*(x1a*yb+ya*x1b);
+				}
+				else {
+					weight += c * (x1a*x1b*x2c*x2d + x1c*x1d*x2a*x2b + x1a*x1b*(x2c*yd+yc*x2d) + x1c*x1d*(x2a*yb+ya*x2b) + x2a*x2b*(x1c*yd+yc*x1d) + x2c*x2d*(x1a*yb+ya*x1b));
+				}
+			}
+			else{
+				int cmd2 = queue[++i];
+				int y = ~cmd, x1 = cmd2, x2 = queue[++i];
+				for (int k = 0; k < 4; k++){
+					lst[y][k] = lst[x1][k] + lst[x2][k];
+				}
+			}
+		}
+		delete lst;
+		return weight;
+	}
 } pt;
 
 JNIEXPORT jobjectArray JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppParse
@@ -203,5 +267,35 @@ JNIEXPORT void JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppBatchC
 	}
 	env->ReleaseLongArrayElements(jres, jpres, 0);
 	delete b;
+}
+
+JNIEXPORT jlong JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppCountEqClass
+		(JNIEnv *env, jclass){
+	return pt.count();
+}
+
+JNIEXPORT jlong JNICALL Java_phylonet_coalescent_Polytree_00024PTNative_cppSupport
+  (JNIEnv *env, jclass, jlongArray jb1, jlongArray jb2, jlongArray jb3, jlongArray jb4){
+	unsigned long long* b = new unsigned long long[4 * pt.nWord]{};
+	
+	int len1 = env->GetArrayLength(jb1);
+	jlong *jpb1 = env->GetLongArrayElements(jb1, 0);
+	memcpy(b + 0 * pt.nWord, jpb1, len1 * sizeof(unsigned long long));
+	env->ReleaseLongArrayElements(jb1, jpb1, 0);
+	int len2 = env->GetArrayLength(jb2);
+	jlong *jpb2 = env->GetLongArrayElements(jb2, 0);
+	memcpy(b + 1 * pt.nWord, jpb2, len2 * sizeof(unsigned long long));
+	env->ReleaseLongArrayElements(jb2, jpb2, 0);
+	int len3 = env->GetArrayLength(jb3);
+	jlong *jpb3 = env->GetLongArrayElements(jb3, 0);
+	memcpy(b + 2 * pt.nWord, jpb3, len3 * sizeof(unsigned long long));
+	env->ReleaseLongArrayElements(jb3, jpb3, 0);
+	int len4 = env->GetArrayLength(jb4);
+	jlong *jpb4 = env->GetLongArrayElements(jb4, 0);
+	memcpy(b + 3 * pt.nWord, jpb4, len4 * sizeof(unsigned long long));
+	env->ReleaseLongArrayElements(jb4, jpb4, 0);
+	unsigned long long result = pt.support(b);
+	delete b;
+	return result;
 }
 

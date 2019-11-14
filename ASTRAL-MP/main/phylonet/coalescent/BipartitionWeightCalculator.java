@@ -126,114 +126,17 @@ class BipartitionWeightCalculator extends AbstractWeightCalculatorConsumer<Tripa
 
 	public Results getWeight(Quadrapartition [] quad ) {
 		long [] fi = {0l,0l,0l};
-		long mi = 0l;
 		double [] weight = {0l,0l,0l};
 		int effectiven = 0;
-		Intersects []  allsides = new Intersects[3];
-		boolean newTree = true;
-		boolean cruise = false;
 		
-		//Quadrapartition []  quad = new Quadrapartition [] {quadm, new Quadrapartition(quadm.cluster1, quadm.cluster3, quadm.cluster2, quadm.cluster4), new Quadrapartition(quadm.cluster1, quadm.cluster4, quadm.cluster2, quadm.cluster3)};
-		Iterator<STITreeCluster> tit = dataCollection.treeAllClusters.iterator();
-		Deque<Intersects> [] stack = new Deque [] {new ArrayDeque<Intersects>(), new ArrayDeque<Intersects>(), new ArrayDeque<Intersects>()};
-
-		for (Integer gtb: geneTreesAsInts){
-			//n++;
-			if (newTree) {
-				STITreeCluster all = tit.next();
-				for (int i=0; i<3; i++){
-					allsides[i] = new Intersects(
-						quad[i].cluster1.getBitSet().intersectionSize(all.getBitSet()),
-						quad[i].cluster2.getBitSet().intersectionSize(all.getBitSet()),
-						quad[i].cluster3.getBitSet().intersectionSize(all.getBitSet()),
-						quad[i].cluster4.getBitSet().intersectionSize(all.getBitSet())
-						);
-				}
-				newTree = false;
-				mi = allsides[0].maxPossible();
-				
-				if ( mi != 0) {
-					effectiven++;
-				} else {
-					cruise = true;
-				}
-				//sum +=  F(allsides.s0, allsides.s1, allsides.s2, allsides.s3);
-			}
-			if (gtb == Integer.MIN_VALUE) {
-				if (!cruise) {
-					//long fiall = fi[0] + fi[1] + fi[2];
-					//if (fiall != 0)
-					//double tf = 0.0; 
-					for (int i=0; i<3; i++) {
-						double efffreq = (fi[i]+0.0)/(2.0*mi);
-					/*if (efffreq != 1 && efffreq != 0)
-						System.err.println(efffreq);*/
-						weight[i] += efffreq;
-						//tf += efffreq;
-					}
-					//if (tf < .99) {
-						//System.err.println("Warning: a gene tree is contributing only "+tf +" to total score of the branch with mi: "+mi);
-					//}
-				}
-				for (int i=0; i<3; i++) stack[i].clear();
-				newTree = true;
-				cruise = false;
-				fi = new long [] {0l,0l,0l};
-				mi = 0;
-			} else {
-				if (cruise) continue;
-				if (gtb >= 0){
-					for (int i=0; i<3; i++) stack[i].push(getSide(gtb, quad[i]));
-				} else  if (gtb == -2) {
-					for (int i=0; i<3; i++) {
-						Intersects side1 = stack[i].pop();
-						Intersects side2 = stack[i].pop();
-					Intersects newSide = new Intersects(side1, side2);
-						stack[i].push(newSide);
-						Intersects side3 = new Intersects(allsides[i]);
-					side3.subtract(newSide);
-	
-						fi[i] += allcases(side1, side2, side3);
-					}
-	
-					//geneTreesAsIntersects[n] = newSide;
-				} else {
-					for (int i=0; i<3; i++) {
-						ArrayList<Intersects> children = new ArrayList<Intersects>();
-					    Intersects newSide = new Intersects(0,0,0,0);
-						    for (int j = gtb; j < 0 ; j++) {
-						        Intersects pop = stack[i].pop();
-					        children.add(pop);
-					        newSide.addin(pop);
-					    }
-						    stack[i].push(newSide);
-			                Intersects sideRemaining = new Intersects (allsides[i]);
-		                sideRemaining.subtract(newSide);
-		                if ( sideRemaining.isNotEmpty()) {
-		                    children.add(sideRemaining);
-		                }
-		                    
-		                long sum0 = 0, sum1 = 0, sum2 = 0, sum3 = 0, sum01 = 0, sum23 = 0;
-		                for (int j = 0; j < children.size(); j++){
-		                	Intersects side = children.get(j);
-		                	sum0 += side.s0;
-		                	sum1 += side.s1;
-		                	sum2 += side.s2;
-		                	sum3 += side.s3;
-		                	sum01 += side.s0 * side.s1;
-		                	sum23 += side.s2 * side.s3;
-	                        }
-		                for (int j = 0; j < children.size(); j++) {
-		                	Intersects side = children.get(j);
-		                	fi[i] += side.s0 * side.s1 * ((sum2 - side.s2) * (sum3 - side.s3) - sum23 + side.s2 * side.s3);
-		                	fi[i] += side.s2 * side.s3 * ((sum0 - side.s0) * (sum1 - side.s1) - sum01 + side.s0 * side.s1);
-	                    }
-	                }
-				}
-			}
+		for (int i=0; i<3; i++){
+			fi[i] = Polytree.PTNative.cppSupport(quad[i].cluster1.getBitSet().words, quad[i].cluster2.getBitSet().words,
+				quad[i].cluster3.getBitSet().words, quad[i].cluster4.getBitSet().words);
 		}
-
-		return  new Results(weight,effectiven);
+		for (int i=0; i<3; i++){
+			weight[i] = fi[i] / (0.0 + fi[0] + fi[1] + fi[2]);
+		}
+		return new Results(weight,effectiven);
 	}
 	
 /*	private boolean checkFutileCalcs(Intersects side1, Intersects side2) {

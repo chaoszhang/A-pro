@@ -51,7 +51,7 @@ public class WQInference extends AbstractInference<Tripartition> {
 		if (weightCalculator instanceof WQWeightCalculator
 				&& ((WQWeightCalculator)weightCalculator).algorithm instanceof WQWeightCalculator.CondensedTraversalWeightCalculator){
 			return ((WQWeightCalculator.CondensedTraversalWeightCalculator)
-					((WQWeightCalculator)weightCalculator).algorithm).polytree.maxScore / 4L
+					((WQWeightCalculator)weightCalculator).algorithm).polytree.maxScore / 2L
 					- unresolvableQuartets();
 		}
 
@@ -245,8 +245,8 @@ public class WQInference extends AbstractInference<Tripartition> {
 
 		Logging.logTimeMessage("WQInference 180: ");
 			
-		System.err.println("Final quartet score is: " + sum/4l);
-		System.err.println("Final normalized quartet score is: "+ (sum/4l+0.)/this.maxpossible);
+		System.err.println("Final quartet score is: " + sum/2l);
+		System.err.println("Final normalized quartet score is: "+ (sum/2l+0.)/this.maxpossible);
 		//System.out.println(st.toNewickWD());
 
 		if (this.getBranchAnnotation() == 0){
@@ -261,7 +261,7 @@ public class WQInference extends AbstractInference<Tripartition> {
 				return logscore;
 			}
 		}
-		return (sum/4l+0.)/this.maxpossible;
+		return (sum/2l+0.)/this.maxpossible;
 
 	}
 
@@ -770,8 +770,8 @@ public class WQInference extends AbstractInference<Tripartition> {
 		Logging.logTimeMessage("WQInference 475: ");
 			
 		System.err.println("Normalized score (portion of input quartet trees satisfied before correcting for multiple individuals): " + 
-				all._max_score/4./this.maxpossible);
-		return (long) (all._max_score/4l);
+				all._max_score/2./this.maxpossible);
+		return (long) (all._max_score/2l);
 	}
 
 

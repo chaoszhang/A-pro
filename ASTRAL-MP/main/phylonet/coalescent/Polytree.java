@@ -221,6 +221,8 @@ public class Polytree {
 		static native String[] cppParse(String inputFile, String mappingFile);
 		static native void cppInit(String[] taxonNames);
 		static native void cppBatchCompute(long[] result, long[][] a, long[][] b, long[][] c);
+		static native long cppCountEqClass();
+		static native long cppSupport(long[] a, long[] b, long[] c, long[] d);
 	}
 	
 	WQDataCollection dataCollection;
@@ -273,10 +275,8 @@ public class Polytree {
 		clusters = null;
 		partitions = null;
 		queueBuilder = null;
-
-		STITreeCluster c = (new STITreeCluster(GlobalMaps.taxonIdentifier)).complementaryCluster();
-		maxScore = computeUpperbound(c.getBitSet());
-		System.err.println("Polytree max score: " + maxScore / 4);
+		maxScore = PTNative.cppCountEqClass();
+		System.err.println("Polytree max score: " + maxScore / 2);
 		System.err.println("Polytree building time: " + (System.currentTimeMillis() - t) / 1000.0D + " seconds.");
 		
 	}
