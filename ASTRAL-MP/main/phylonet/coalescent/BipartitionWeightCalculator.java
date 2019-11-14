@@ -133,10 +133,23 @@ class BipartitionWeightCalculator extends AbstractWeightCalculatorConsumer<Tripa
 			fi[i] = Polytree.PTNative.cppSupport(quad[i].cluster1.getBitSet().words, quad[i].cluster2.getBitSet().words,
 				quad[i].cluster3.getBitSet().words, quad[i].cluster4.getBitSet().words);
 		}
-		for (int i=0; i<3; i++){
-			weight[i] = fi[i] / (0.0 + fi[0] + fi[1] + fi[2]);
+		
+		effectiven = (int)((fi[0] + fi[1] + fi[2]) / (quad[0].cluster1.getClusterSize() * quad[0].cluster2.getClusterSize() * quad[0].cluster3.getClusterSize() * quad[0].cluster4.getClusterSize()));
+		
+		/*for (STITreeCluster s: dataCollection.treeAllClusters){
+			if (quad[0].cluster1.getBitSet().intersectionSize(s.getBitSet()) == 0) continue;
+			if (quad[0].cluster2.getBitSet().intersectionSize(s.getBitSet()) == 0) continue;
+			if (quad[0].cluster3.getBitSet().intersectionSize(s.getBitSet()) == 0) continue;
+			if (quad[0].cluster4.getBitSet().intersectionSize(s.getBitSet()) == 0) continue;
+			effectiven++;
 		}
-		return new Results(weight,effectiven);
+		effectiven /= 16;
+		*/
+		
+		for (int i=0; i<3; i++){
+			weight[i] = effectiven * fi[i] / (0.0 + fi[0] + fi[1] + fi[2]);
+		}
+		return new Results(weight, effectiven);
 	}
 	
 /*	private boolean checkFutileCalcs(Intersects side1, Intersects side2) {
