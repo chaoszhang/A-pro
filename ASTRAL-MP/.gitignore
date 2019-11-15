@@ -11,10 +11,6 @@ pastOutput
 sb_files
 shellscripts
 Astral
-astral.4.10.10.jar
-astral.4.10.6.jar
-astral.4.10.7.jar
-astralcpu.4.10.8.jar
 newick-utils*
 main/gputest/*
 *.md
@@ -24,6 +20,5 @@ calculateWeightVersions/
 *.trees
 *.tre
 =======
-astral*jar
 >>>>>>> parallel
 old/*

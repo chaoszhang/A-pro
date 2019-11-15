@@ -44,7 +44,7 @@ import phylonet.tree.model.sti.STITree;
 import phylonet.tree.util.Trees;
 
 public class CommandLine {
-	protected static String _version = "1.1.1";
+	protected static String _version = "1.1.2";
 	protected static SimpleJSAP jsap;
 
 	private static void exitWithErr(String extraMessage) {
@@ -76,7 +76,7 @@ public class CommandLine {
 								"USe NJst-like internode distances instead of quartet distance for building the search space (X). Unpublished work. "),
 						new FlaggedOption("score species trees", FileStringParser.getParser().setMustExist(true), null,
 								JSAP.NOT_REQUIRED, 'q', "score-tree", "score the provided species tree and exit"),
-						new FlaggedOption("branch annotation level", JSAP.INTEGER_PARSER, "0", JSAP.NOT_REQUIRED, 't',
+						new FlaggedOption("branch annotation level", JSAP.INTEGER_PARSER, "3", JSAP.NOT_REQUIRED, 't',
 								"branch-annotate",
 								"How much annotations should be added to each branch: 0, 1, or 2. \n"
 										+ "0: no annotations. \n"
