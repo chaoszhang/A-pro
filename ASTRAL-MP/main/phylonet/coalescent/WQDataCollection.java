@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -605,6 +606,12 @@ implements Cloneable {
 	@Override
 	public void formSetX(AbstractInference<Tripartition> inf) {
 
+		List<Tree> backup = originalInompleteGeneTrees;
+		
+		for (int i = 0; i <=10; i++) {
+			
+			Collections.shuffle(backup);
+			this.originalInompleteGeneTrees = backup.subList(0, (backup.size()+1)/2);
 
 		WQInference inference = (WQInference) inf;
 		int haveMissing = preProcess(inference);
@@ -804,6 +811,7 @@ implements Cloneable {
 		
 		System.err.println("Number of Clusters after addition by greedy: "+clusters.getClusterCount());
 		Logging.logTimeMessage(" WQDataCollection 760-763: ");
+		}
 
 	}
 
