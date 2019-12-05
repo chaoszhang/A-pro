@@ -133,8 +133,8 @@ class BipartitionWeightCalculator extends AbstractWeightCalculatorConsumer<Tripa
 			fi[i] = Polytree.PTNative.cppSupport(quad[i].cluster1.getBitSet().words, quad[i].cluster2.getBitSet().words,
 				quad[i].cluster3.getBitSet().words, quad[i].cluster4.getBitSet().words);
 		}
-		
-		effectiven = (int)((fi[0] + fi[1] + fi[2]) / (quad[0].cluster1.getClusterSize() * quad[0].cluster2.getClusterSize() * quad[0].cluster3.getClusterSize() * quad[0].cluster4.getClusterSize()));
+		long q = (quad[0].cluster1.getClusterSize() * quad[0].cluster2.getClusterSize() * quad[0].cluster3.getClusterSize() * quad[0].cluster4.getClusterSize());
+		effectiven = (int)((fi[0] + fi[1] + fi[2]) / q);
 		
 		/*for (STITreeCluster s: dataCollection.treeAllClusters){
 			if (quad[0].cluster1.getBitSet().intersectionSize(s.getBitSet()) == 0) continue;
@@ -147,7 +147,7 @@ class BipartitionWeightCalculator extends AbstractWeightCalculatorConsumer<Tripa
 		*/
 		
 		for (int i=0; i<3; i++){
-			weight[i] = effectiven * fi[i] / (0.0 + fi[0] + fi[1] + fi[2]);
+			weight[i] = (fi[i] + 0.0) / q;
 		}
 		return new Results(weight, effectiven);
 	}
