@@ -366,12 +366,12 @@ private:
 		return true;
 	}
 	
-	pair<vector<pair<string, int> >, vector<pair<string, int> > > breakSubtree(int cur) const{
+	pair<vector<pair<string, int> >, vector<pair<string, int> > > breakSubtree(int cur, bool keeplost) const{
 		if (node[cur].isLeaf){
 			string name = id2name[node[cur].leafId];
 			return {vector<pair<string, int> >(1, {name, 0}), vector<pair<string, int> >(1, {name, 0})};
 		}
-		auto left = breakSubtree(node[cur].leftChildId), right = breakSubtree(node[cur].rightChildId);
+		auto left = breakSubtree(node[cur].leftChildId, keeplost), right = breakSubtree(node[cur].rightChildId, keeplost);
 		if (node[cur].isDuplication){
 			vector<pair<string, int> > first, second;
 			if (eq(left.first, left.second)){
@@ -387,6 +387,28 @@ private:
 			else {
 				for (auto &e: right.first) second.push_back({e.first, e.second + 1});
 				for (auto &e: right.second) second.push_back({e.first, e.second + 1});
+			}
+			if (keeplost){
+				string outgroupL, outgroupR;
+				bool singleL = true, singleR = true;
+				for (int i: (node[cur].label - node[node[cur].leftChildId].label).setBits()){
+					if (outgroupL == "") outgroupL = id2name[i];
+					else {
+						singleL = false;
+						outgroupL += "," + id2name[i];
+					}
+				}
+				if (!singleL) outgroupL = "(" + outgroupL + ")";
+				for (int i: (node[cur].label - node[node[cur].rightChildId].label).setBits()){
+					if (outgroupR == "") outgroupR = id2name[i];
+					else {
+						singleR = false;
+						outgroupR += "," + id2name[i];
+					}
+				}
+				if (!singleR) outgroupR = "(" + outgroupR + ")";
+				vector<pair<string, int> > outL(1, {outgroupL, 0}), outR(1, {outgroupR, 0});
+				return {outgroupL == "" ? first : merge(first, outL), outgroupR == "" ? second : merge(second, outR)};
 			}
 			return {first, second};
 		}
@@ -473,8 +495,8 @@ public:
 		return bestroot;
 	}
 	
-	vector<pair<string, int> > breakGenetree(int root) const{
-		pair<vector<pair<string, int> >, vector<pair<string, int> > > result = breakSubtree(root);
+	vector<pair<string, int> > breakGenetree(int root, bool keeplost = false) const{
+		pair<vector<pair<string, int> >, vector<pair<string, int> > > result = breakSubtree(root, keeplost);
 		vector<pair<string, int> > ret;
 		if (eq(result.first, result.second)){
 			for (auto &e: result.first) ret.push_back({e.first + ";", e.second});
@@ -564,7 +586,10 @@ tuple<string, string, stringstream*> annotate(string input, string mapping) {
 	stringstream* spoly = new stringstream();
 	GenetreeAnnotator ga;
 	GenetreeAnnotator::Polytree pt;
-	int cnt = 0;
+	int cnt = 0, thd = 0, k = 0;
+	for (char c: TEXT) if (c == ';') k++;
+	if (k > 500) thd = 0;
+	else thd = (500 - k) / 4;
 	while (pos < TEXT.size()){
 		while (pos < TEXT.size() && TEXT[pos] != '(') pos++;
 		if (pos < TEXT.size()) {
@@ -578,6 +603,11 @@ tuple<string, string, stringstream*> annotate(string input, string mapping) {
 			auto trees = ga.breakGenetree(iroot);
 			for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) sx += e.first + "\n";
 			for (string s: sample(trees, 4)) if (count(s.begin(), s.end(), ',') >= 3) sout += s + "\n";
+			if (cnt < thd){
+				for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) sout += e.first + "\n";
+				auto treeswithoutgroup = ga.breakGenetree(iroot, true);
+				for (auto e: treeswithoutgroup) if (count(e.first.begin(), e.first.end(), ',') >= 3) sout += e.first + "\n";
+			}
 		}
 	}
 	cerr << "The number of input tree read is " << cnt << endl;
