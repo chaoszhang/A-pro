@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -45,7 +46,7 @@ implements Cloneable {
 	 * A list that includes the cluster associated with the set of all taxa
 	 * included in each gene tree
 	 */
-	List<STITreeCluster> treeAllClusters = new ArrayList<STITreeCluster>();
+	List<STITreeCluster> treeAllClusters = null;
 
 	/**
 	 * Similarity matrices for individuals. Used for setting up set X
@@ -605,6 +606,18 @@ implements Cloneable {
 	@Override
 	public void formSetX(AbstractInference<Tripartition> inf) {
 
+		List<Tree> backup = new ArrayList(originalInompleteGeneTrees);
+		List<Tree> full = new ArrayList(originalInompleteGeneTrees);
+		
+		for (int i = 0; i <=10; i++) {
+			
+			if (i <10) {
+			
+			Collections.shuffle(full);
+			this.originalInompleteGeneTrees = full.subList(0, (backup.size()+1)/2);
+			} else {
+				this.originalInompleteGeneTrees = backup;
+			}
 
 		WQInference inference = (WQInference) inf;
 		int haveMissing = preProcess(inference);
@@ -804,6 +817,8 @@ implements Cloneable {
 		
 		System.err.println("Number of Clusters after addition by greedy: "+clusters.getClusterCount());
 		Logging.logTimeMessage(" WQDataCollection 760-763: ");
+		}
+		//this.originalInompleteGeneTrees = backup;
 
 	}
 
@@ -867,6 +882,7 @@ implements Cloneable {
 		// n = GlobalMaps.taxonIdentifier.taxonCount();
 
 		int haveMissing = 0;
+		treeAllClusters  = new ArrayList<STITreeCluster>();
 		for (Tree tree : this.originalInompleteGeneTrees) {
 			if (tree.getLeafCount() != GlobalMaps.taxonIdentifier.taxonCount()) {
 				haveMissing++;
