@@ -48,3 +48,13 @@ Note that instead of `cd` to `ASTRAL-MP`, you can replace `astral.<version_numbe
 ```
 java -D"java.library.path=/Users/chaoszhang/A-pro/lib" -jar /Users/chaoszhang/A-pro/astral.<version_number>.jar -i input -o output
 ```
+
+Examples:
+cd to `ASTRAL-MP` and run for multi-labelled gene trees:
+```
+java -jar -D"java.library.path=lib" astral.1.1.2.jar -i ../example/example1.tre
+```
+cd to `ASTRAL-MP` and run for gene trees with gene-name-to-species-name mapping provided:
+```
+java -jar -D"java.library.path=lib" astral.1.1.2.jar -i ../example/example2.tre -a ../example/example2map.txt
+```
