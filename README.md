@@ -1,5 +1,9 @@
 # A-pro
-ASTRAL for PaRalogs and Orthologs
+ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs.
+
+### Publication:
+
+[To be added]
 
 ## Required installations
 - Java (>=1.7)
