@@ -1,5 +1,5 @@
 # A-pro
-ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs.
+ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs. ASTRAL is a tool for estimating an unrooted species tree given a set of unrooted gene trees. ASTRAL is statistically consistent under the multi-species coalescent model (and thus is useful for handling incomplete lineage sorting, i.e., ILS). ASTRAL-pro extends ASTRAL to allow multi-copy genes. ASTRAL-pro finds the species tree that has the maximum number of shared induced quartet tree equivalent classes with the set of gene trees, subject to the constraint that the set of bipartitions in the species tree comes from a predefined set of bipartitions. ASTRAL-pro code is based on ASTRAL-MP.
 
 ### Publication:
 
@@ -12,6 +12,9 @@ ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs.
 
 ## Installation 
 
+Download:
+    * You simply need to download the [zip file] (under clone and download zip) and extract the contents to a folder of your choice. 
+    * Alternatively, you can clone the [github repository](https://github.com/chaoszhang/A-pro)
 Normally, you would not need to install. You can just run A-Pro, as we show bellow.
 
 If you have trouble with running the packaged A-Pro, 
