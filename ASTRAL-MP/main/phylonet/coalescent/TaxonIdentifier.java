@@ -39,8 +39,8 @@ public class TaxonIdentifier {
 		hash2 = new long[taxonCount];
 		Random rnd = GlobalMaps.random;
 		for (int i = 0; i < taxonCount; i++) {
-			hash1[i] = rnd.nextLong();
-			hash2[i] = rnd.nextLong();
+			hash1[i] = rnd.nextLong() ^ rnd.nextLong() ^ rnd.nextLong(); 
+			hash2[i] = ( rnd.nextLong() ^ rnd.nextLong() ) +  ( rnd.nextLong() ^ rnd.nextLong() );
 		}
     }
     
