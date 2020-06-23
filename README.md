@@ -46,5 +46,5 @@ java -D"java.library.path=lib" -jar astral.<version_number>.jar -i input -a mapp
 Note that instead of `cd` to `ASTRAL-MP`, you can replace `astral.<version_number>.jar` and `-D"java.library.path=lib/"` with absolute path to A-Pro. For example, if my A-Pro is located on `/Users/smirarab/A-pro`, you can use:
 
 ```
-java -D"java.library.path=/Users/smirarab/A-pro/lib" -jar /Users/smirarab/A-pro/astral.<version_number>.jar -i input -o output
+java -D"java.library.path=/Users/chaoszhang/A-pro/lib" -jar /Users/chaoszhang/A-pro/astral.<version_number>.jar -i input -o output
 ```
