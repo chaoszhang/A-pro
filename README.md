@@ -13,8 +13,9 @@ ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs. ASTRAL is a tool for es
 ## Installation 
 
 Download:
-    * You simply need to download the [zip file] (under clone and download zip) and extract the contents to a folder of your choice. 
-    * Alternatively, you can clone the [github repository](https://github.com/chaoszhang/A-pro)
+
+You simply need to download the zip file (under clone and download zip) and extract the contents to a folder of your choice. Alternatively, you can clone the [github repository](https://github.com/chaoszhang/A-pro).
+    
 Normally, you would not need to install. You can just run A-Pro, as we show bellow.
 
 If you have trouble with running the packaged A-Pro, 
