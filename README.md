@@ -36,7 +36,7 @@ GeneC1 SpeciesC
 ```
 Taxon names cannot have quotation marks in their names (sorry!). This means you also cannot have weird characters like ? in the name (underscore is fine).
 
-## Output options: 
+## Output options
 The output in is Newick format and gives: 
 
 * the species tree topology, 
@@ -83,7 +83,7 @@ java -jar -D"java.library.path=lib" astral.1.1.2.jar -i ../example/example2.tre 
 For big datasets (say more than 5000 taxa), increasing the memory available to Java can result in speedups. Note that you should give Java only as much free memory as you have available on your machine. So, for example, if you have 3GB of free memory, you can invoke ASTRAL using the following command to make all the 3GB available to Java:
 
 ```
-java -Xmx3000M -D"java.library.path=lib/" -jar astral.5.15.1.jar -i in.tree
+java -Xmx3000M -D"java.library.path=lib/" -jar astral.<version_number>.jar -i input
 ```
 
 Acknowledgment
