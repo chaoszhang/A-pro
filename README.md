@@ -26,6 +26,7 @@ If you have trouble with running the packaged A-Pro,
 For more information please see AVX2 section of https://github.com/smirarab/ASTRAL/tree/MP
 
 ## Input requirement
+
 The input gene trees must be in the Newick format, either multi-labelled (eg. ((SpeciesA,SpeciesB),(SpeciesA,SpeciesC));) or with gene-name-to-species-name mapping provided in the following format (eg. for ((GeneA1,GeneB1),(GeneA2,GeneC1));):
 ```
 GeneA1 SpeciesA
@@ -33,6 +34,17 @@ GeneA2 SpeciesA
 GeneB1 SpeciesB
 GeneC1 SpeciesC
 ```
+Taxon names cannot have quotation marks in their names (sorry!). This means you also cannot have weird characters like ? in the name (underscore is fine).
+
+## Output options: 
+The output in is Newick format and gives: 
+
+* the species tree topology, 
+* branch lengths in coalescent units,
+* branch supports measured as [local posterior probabilities](http://mbe.oxfordjournals.org/content/early/2016/05/12/molbev.msw079.short?rss=1). 
+* It can also annotate branches with other quantities, such as quartet support, as described in the [tutorial](astral-tutorial.md).
+
+The ASTRAL tree leaves the branch length of terminal branches empty. Some tools for visualization and tree editing do not like this (e.g., ape). In FigTree, if you open the tree several times, it eventually opens up (at least on our machines). In ape, if you ask it to ignore branch lengths all together, it works. In general, if you tool does not like the lack of terminal branches, you can add a dummy branch length, [as in this script](https://github.com/smirarab/global/blob/master/src/mirphyl/utils/add-bl.py). 
 
 ## Running A-pro
 cd to `ASTRAL-MP` and run for multi-labelled gene trees:
@@ -56,7 +68,6 @@ Note that instead of `cd` to `ASTRAL-MP`, you can replace `astral.<version_numbe
 java -D"java.library.path=/Users/chaoszhang/A-pro/lib" -jar /Users/chaoszhang/A-pro/astral.<version_number>.jar -i input -o output
 ```
 
-
 Examples:
 
 cd to `ASTRAL-MP` and run for multi-labelled gene trees:
@@ -67,3 +78,19 @@ cd to `ASTRAL-MP` and run for gene trees with gene-name-to-species-name mapping 
 ```
 java -jar -D"java.library.path=lib" astral.1.1.2.jar -i ../example/example2.tre -a ../example/example2map.txt
 ```
+
+### Memory:
+For big datasets (say more than 5000 taxa), increasing the memory available to Java can result in speedups. Note that you should give Java only as much free memory as you have available on your machine. So, for example, if you have 3GB of free memory, you can invoke ASTRAL using the following command to make all the 3GB available to Java:
+
+```
+java -Xmx3000M -D"java.library.path=lib/" -jar astral.5.15.1.jar -i in.tree
+```
+
+Acknowledgment
+-----------
+ASTRAL code uses bytecode and some reverse engineered code from PhyloNet package (with permission from the authors).
+
+
+Bug Reports:
+-----------
+contact ``astral-users@googlegroups.com``
