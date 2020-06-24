@@ -37,17 +37,25 @@ GeneC1 SpeciesC
 ## Running A-pro
 cd to `ASTRAL-MP` and run for multi-labelled gene trees:
 ```
+java -D"java.library.path=lib" -jar astral.<version_number>.jar -i input
+```
+The results will be outputted to the standard output. To save the results in a file use the `-o` option (**Strongly recommended**):
+```
 java -D"java.library.path=lib" -jar astral.<version_number>.jar -i input -o output
+```
+To save the logs (**also recommended**), run:
+```
+java -D"java.library.path=lib" -jar astral.<version_number>.jar -i input -o output 2>out.log
 ```
 cd to `ASTRAL-MP` and run for gene trees with gene-name-to-species-name mapping provided:
 ```
 java -D"java.library.path=lib" -jar astral.<version_number>.jar -i input -a mapping -o output
 ```
 Note that instead of `cd` to `ASTRAL-MP`, you can replace `astral.<version_number>.jar` and `-D"java.library.path=lib/"` with absolute path to A-Pro. For example, if my A-Pro is located on `/Users/smirarab/A-pro`, you can use:
-
 ```
 java -D"java.library.path=/Users/chaoszhang/A-pro/lib" -jar /Users/chaoszhang/A-pro/astral.<version_number>.jar -i input -o output
 ```
+
 
 Examples:
 
