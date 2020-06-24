@@ -42,7 +42,7 @@ The output in is Newick format and gives:
 * the species tree topology, 
 * branch lengths in coalescent units,
 * branch supports measured as [local posterior probabilities](http://mbe.oxfordjournals.org/content/early/2016/05/12/molbev.msw079.short?rss=1). 
-* It can also annotate branches with other quantities, such as quartet support, as described in the [tutorial](astral-tutorial.md).
+* It can also annotate branches with other quantities, such as quartet support, as described in the [tutorial](Astral-MP/astral-tutorial.md).
 
 The ASTRAL tree leaves the branch length of terminal branches empty. Some tools for visualization and tree editing do not like this (e.g., ape). In FigTree, if you open the tree several times, it eventually opens up (at least on our machines). In ape, if you ask it to ignore branch lengths all together, it works. In general, if you tool does not like the lack of terminal branches, you can add a dummy branch length, [as in this script](https://github.com/smirarab/global/blob/master/src/mirphyl/utils/add-bl.py). 
 
