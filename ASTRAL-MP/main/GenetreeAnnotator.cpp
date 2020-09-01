@@ -571,6 +571,12 @@ long long parse(unordered_map<long long, string> &leafname, unordered_map<long l
 }
 
 tuple<string, string, stringstream*> annotate(string input, string mapping) {
+	int ti = 3, tx = 3, pw = 4;
+	ifstream fcfg("astral-pro.config");
+	if (fcfg >> ti){
+		fcfg >> tx >> pw;
+	}
+	cerr << "ti: " << ti << "\ntx: " << tx << "\npw: " << pw << endl;
 	if (mapping != ""){
 		ifstream fmap(mapping);
 		string gname, sname;
@@ -601,8 +607,8 @@ tuple<string, string, stringstream*> annotate(string input, string mapping) {
 			ga.buildPolytree(iroot, pt);
 			cnt++;
 			auto trees = ga.breakGenetree(iroot);
-			for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) sx += e.first + "\n";
-			for (string s: sample(trees, 4)) if (count(s.begin(), s.end(), ',') >= 3) sout += s + "\n";
+			for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= tx) sx += e.first + "\n";
+			for (string s: sample(trees, pw)) if (count(s.begin(), s.end(), ',') >= ti) sout += s + "\n";
 			if (cnt < thd){
 				for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) sout += e.first + "\n";
 				auto treeswithoutgroup = ga.breakGenetree(iroot, true);
