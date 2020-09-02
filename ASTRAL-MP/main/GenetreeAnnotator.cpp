@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_set>
 #include <unordered_map>
+#include <random>
 
 using namespace std;
 
@@ -225,6 +226,9 @@ struct PartitionHasher{
 	}
 };
 
+mt19937_64 generator;
+uniform_int_distribution<uint64_t> distribution;
+
 class GenetreeAnnotator{
 public:
 	struct Polytree{
@@ -422,20 +426,22 @@ private:
 		
 		int left = node[cur].leftChildId, right = node[cur].rightChildId;
 		if (node[cur].isDuplication){
-			ClusterHash lc = buildPolytreePre(left, nodeCluster, pt, isRoot), rc = buildPolytreePre(right, nodeCluster, pt, isRoot);
+			ClusterHash lc = buildPolytreePre(left, nodeCluster, pt, isRoot);
+			ClusterHash rc = buildPolytreePre(right, nodeCluster, pt, isRoot);
 			if (node[left].label == node[cur].label) return nodeCluster[cur] = lc;
 			if (node[right].label == node[cur].label) return nodeCluster[cur] = rc;
 			ClusterHash c = lc;
 			for (int i: (node[cur].label - node[left].label).setBits()){
 				ClusterHash nc = c + pt.singletons[i];
-				pt.clusters.insert(nc);
-				pt.additions.insert(PartitionHash(nc, c, pt.singletons[i]));
+				if (!isRoot) pt.clusters.insert(nc);
+				if (!isRoot) pt.additions.insert(PartitionHash(nc, c, pt.singletons[i]));
 				c = nc;
 			}
 			return nodeCluster[cur] = c;
 		}
 		else {
-			ClusterHash lc = buildPolytreePre(left, nodeCluster, pt), rc = buildPolytreePre(right, nodeCluster, pt);
+			ClusterHash lc = buildPolytreePre(left, nodeCluster, pt);
+			ClusterHash rc = buildPolytreePre(right, nodeCluster, pt);
 			ClusterHash c = lc + rc;
 			if (!isRoot) pt.clusters.insert(c);
 			if (!isRoot) pt.additions.insert(PartitionHash(c, lc, rc));
@@ -453,7 +459,7 @@ private:
 		}
 		else {
 			ClusterHash lc = nodeCluster[left], rc = nodeCluster[right];
-			if (!isRoot) pt.partitions[PartitionHash(s, lc, rc)]++;
+			pt.partitions[PartitionHash(s, lc, rc)]++;
 			ClusterHash ls = s + rc;
 			pt.clusters.insert(ls);
 			if (!isRoot) pt.additions.insert(PartitionHash(ls, s, rc));
@@ -510,14 +516,14 @@ public:
 	
 	void buildPolytree(int root, Polytree& pt) const{
 		while (pt.singletons.size() < id2name.size()){
-			ClusterHash c((((uint64_t) rand()) << 60) ^ (((uint64_t) rand()) << 45) ^ (((uint64_t) rand()) << 30) ^ (((uint64_t) rand()) << 15) ^ ((uint64_t) rand()),
-				(((uint64_t) rand()) << 60) ^ (((uint64_t) rand()) << 45) ^ (((uint64_t) rand()) << 30) ^ (((uint64_t) rand()) << 15) ^ ((uint64_t) rand()));
+			ClusterHash c(distribution(generator), distribution(generator));
 			pt.clusters.insert(c);
 			pt.singletons.push_back(c);
 		}
 		unordered_map<int, ClusterHash> nodeCluster;
 		buildPolytreePre(root, nodeCluster, pt, true);
-		ClusterHash s;	
+		ClusterHash s;
+		pt.clusters.insert(s);
 		buildPolytreePost(root, nodeCluster, pt, s, true);
 	}
 };

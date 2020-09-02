@@ -17,7 +17,7 @@ jar -J-Xmx20m cvfm ../native_library_tester.jar ../avx_tester_manifest.text phyl
 
 cd ..
 
-sh compile_native_c_code.sh
+bash compile_native_c_code.sh
 
 chmod +x astral.$version.jar
 sed -e "s/__astral.jar__/astral.$version.jar/g" -e "s/__astral.zip__/Astral.$version.zip/g" README.template.md > README.md

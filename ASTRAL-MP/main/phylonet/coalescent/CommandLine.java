@@ -44,7 +44,7 @@ import phylonet.tree.model.sti.STITree;
 import phylonet.tree.util.Trees;
 
 public class CommandLine {
-	protected static String _version = "1.1.2";
+	protected static String _version = "1.1.3";
 	protected static SimpleJSAP jsap;
 
 	private static void exitWithErr(String extraMessage) {
