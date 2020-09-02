@@ -94,3 +94,8 @@ ASTRAL code uses bytecode and some reverse engineered code from PhyloNet package
 Bug Reports:
 -----------
 contact ``astral-users@googlegroups.com``
+
+
+Alternative:
+-----------
+If it is hard to install or run ASTRAL-Pro on your machine, please try C++ version [here](https://github.com/chaoszhang/FEAST).
