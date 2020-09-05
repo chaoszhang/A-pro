@@ -3,7 +3,7 @@ ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs. ASTRAL is a tool for es
 
 ### Publication:
 
-[To be added]
+Chao Zhang, Celine Scornavacca, Erin K Molloy, Siavash Mirarab, ASTRAL-Pro: Quartet-Based Species-Tree Inference despite Paralogy, Molecular Biology and Evolution, , msaa139, https://doi.org/10.1093/molbev/msaa139
 
 ## Required installations
 - Java (>=1.7)
