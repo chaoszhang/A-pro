@@ -107,7 +107,7 @@ struct Polytree{
 		for (int i = 0; i < queueSize; i++){
 			int cmd = queue[i];
 			if (cmd >= 0) {
-				int y = lst[cmd], x1 = lst[queue[++i]], x2 = lst[queue[++i]], c = queue[++i];
+				unsigned long long y = lst[cmd], x1 = lst[queue[++i]], x2 = lst[queue[++i]], c = queue[++i];
 				if (c == 1) {
 					weight += x1 * (x1 - 1) * x2 * (x2 - 1) / 2 + x1 * x2 * y * (x1 + x2 - 2);
 				}
