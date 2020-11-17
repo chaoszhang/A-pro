@@ -25,6 +25,8 @@ If you have trouble with running the packaged A-Pro,
 
 For more information please see AVX2 section of https://github.com/smirarab/ASTRAL/tree/MP
 
+If it is hard to install or run ASTRAL-Pro on your machine, please try C++ version [here](https://github.com/chaoszhang/FEAST).
+
 ## Input requirement
 
 The input gene trees must be in the Newick format, either multi-labelled (eg. ((SpeciesA,SpeciesB),(SpeciesA,SpeciesC));) or with gene-name-to-species-name mapping provided in the following format (eg. for ((GeneA1,GeneB1),(GeneA2,GeneC1));):
