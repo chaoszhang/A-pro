@@ -88,6 +88,14 @@ For big datasets (say more than 5000 taxa), increasing the memory available to J
 java -Xmx3000M -D"java.library.path=lib/" -jar astral.<version_number>.jar -i input
 ```
 
+### Search Space:
+For big datasets (say more than 5000 taxa), generating search space may take more than reasonable time. Reducing excessive search space can result in speedups. The search space can be controlled by placing `astral-pro.config` file in the working directory in the following format: 
+```
+X Y Z
+```
+Each multi-copy gene tree will be broken into `2^X` single-copy trees; only single-copy trees with more than `Y` leaves will be included in the search space and only single-copy trees with more than `Z` leaves will be used to generate extra search space.
+
+
 Acknowledgment
 -----------
 ASTRAL code uses bytecode and some reverse engineered code from PhyloNet package (with permission from the authors).
