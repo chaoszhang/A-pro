@@ -1,5 +1,5 @@
 # A-pro
-ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs. ASTRAL is a tool for estimating an unrooted species tree given a set of unrooted gene trees. ASTRAL is statistically consistent under the multi-species coalescent model (and thus is useful for handling incomplete lineage sorting, i.e., ILS). ASTRAL-pro extends ASTRAL to allow multi-copy genes. ASTRAL-pro finds the species tree that has the maximum number of shared induced quartet tree equivalent classes with the set of gene trees, subject to the constraint that the set of bipartitions in the species tree comes from a predefined set of bipartitions. ASTRAL-pro code is based on ASTRAL-MP.
+ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs. ASTRAL is a tool for estimating an unrooted species tree given a set of unrooted gene trees and is statistically consistent under the multi-species coalescent model (and thus is useful for handling incomplete lineage sorting, i.e., ILS). ASTRAL-pro extends ASTRAL to allow multi-copy genes. ASTRAL-pro finds the species tree that has the maximum number of shared induced quartet tree equivalent classes with the set of gene trees, subject to the constraint that the set of bipartitions in the species tree comes from a predefined set of bipartitions. Please see the paper below for the definition of the PL-quartet scores, which is what ASTRAL-Pro optimizes. We refer to the tool both as A-Pro and ASTRAL-Pro. 
 
 ### Publication:
 
@@ -25,7 +25,7 @@ If you have trouble with running the packaged A-Pro,
 
 For more information please see AVX2 section of https://github.com/smirarab/ASTRAL/tree/MP
 
-If it is hard to install or run ASTRAL-Pro on your machine, please try C++ version [here](https://github.com/chaoszhang/FEAST).
+If it is hard to install or run ASTRAL-Pro on your machine, you can try an unpublished C++ version [here](https://github.com/chaoszhang/FEAST).
 
 ## Input requirement
 
@@ -36,7 +36,7 @@ GeneA2 SpeciesA
 GeneB1 SpeciesB
 GeneC1 SpeciesC
 ```
-Taxon names cannot have quotation marks in their names (sorry!). This means you also cannot have weird characters like ? in the name (underscore is fine).
+Taxon names cannot have quotation marks in their names (sorry!). This means you also cannot have weird characters like `?` or `|` in the name (underscore is fine).
 
 ## Output options
 The output in is Newick format and gives: 
@@ -65,7 +65,7 @@ cd to `ASTRAL-MP` and run for gene trees with gene-name-to-species-name mapping 
 ```
 java -D"java.library.path=lib" -jar astral.<version_number>.jar -i input -a mapping -o output
 ```
-Note that instead of `cd` to `ASTRAL-MP`, you can replace `astral.<version_number>.jar` and `-D"java.library.path=lib/"` with absolute path to A-Pro. For example, if my A-Pro is located on `/Users/smirarab/A-pro`, you can use:
+Note that instead of `cd` to `ASTRAL-MP`, you can replace `astral.<version_number>.jar` and `-D"java.library.path=lib/"` with absolute path to A-Pro. For example, if my A-Pro is located on `/Users/chaoszhang/A-pro`, you can use:
 ```
 java -D"java.library.path=/Users/chaoszhang/A-pro/lib" -jar /Users/chaoszhang/A-pro/astral.<version_number>.jar -i input -o output
 ```
@@ -81,6 +81,8 @@ cd to `ASTRAL-MP` and run for gene trees with gene-name-to-species-name mapping 
 java -jar -D"java.library.path=lib" astral.1.1.2.jar -i ../example/example2.tre -a ../example/example2map.txt
 ```
 
+## Handling very large datasets
+
 ### Memory:
 For big datasets (say more than 5000 taxa), increasing the memory available to Java can result in speedups. Note that you should give Java only as much free memory as you have available on your machine. So, for example, if you have 3GB of free memory, you can invoke ASTRAL using the following command to make all the 3GB available to Java:
 
@@ -89,16 +91,23 @@ java -Xmx3000M -D"java.library.path=lib/" -jar astral.<version_number>.jar -i in
 ```
 
 ### Search Space:
-For big datasets (say more than 5000 taxa), generating search space may take more than reasonable time. Reducing excessive search space can result in speedups. The search space can be controlled by placing `astral-pro.config` file in the working directory in the following format: 
+For big datasets (say more than 5000 taxa), generating search space may take more than reasonable time. Reducing excessive search space can result in speedups. The search space can be controlled by placing [astral-pro.config](ASTRAL-MP/astral-pro.config) file in your working directory (the directory you get when you run `pwd`) and then changing values of `X`, `Y`, and `Z`. The file has the following format: 
 ```
-X Y Z
+X 
+Y 
+Z
 ```
-Each multi-copy gene tree will be broken into `2^X` single-copy trees; only single-copy trees with more than `Y` leaves will be included in the search space and only single-copy trees with more than `Z` leaves will be used to generate extra search space.
+Each multi-copy gene tree will be broken into `2^X` single-copy trees; only single-copy trees with more than `Y` leaves will be included in the search space and only single-copy trees with more than `Z` leaves will be used to generate extra search space. You reduce the search space, you want to increase `Y` and `Z` to be close to one third or half of the number of species you have. For example, for a dataset with 1200 species and 5000 genes, we used the following values with success. 
+```
+200
+100
+2
+```
 
 
 Acknowledgment
 -----------
-ASTRAL code uses bytecode and some reverse engineered code from PhyloNet package (with permission from the authors).
+ASTRAL code reuses code from ASTRAL-MP and bytecode and some reverse engineered code from PhyloNet package (with permission from the authors).
 
 
 Bug Reports:
@@ -108,4 +117,4 @@ contact ``astral-users@googlegroups.com``
 
 Alternative:
 -----------
-If it is hard to install or run ASTRAL-Pro on your machine, please try C++ version [here](https://github.com/chaoszhang/FEAST).
+If it is hard to install or run ASTRAL-Pro on your machine, you can try (unpublished) C++ version [here](https://github.com/chaoszhang/FEAST).
