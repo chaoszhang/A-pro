@@ -84,14 +84,14 @@ java -jar -D"java.library.path=lib" astral.1.1.2.jar -i ../example/example2.tre 
 ## Handling very large datasets
 
 ### Memory:
-For big datasets (say more than 5000 taxa), increasing the memory available to Java can result in speedups. Note that you should give Java only as much free memory as you have available on your machine. So, for example, if you have 3GB of free memory, you can invoke ASTRAL using the following command to make all the 3GB available to Java:
+For big datasets (say more than 500 taxa), increasing the memory available to Java can result in speedups. Note that you should give Java only as much free memory as you have available on your machine. So, for example, if you have 3GB of free memory, you can invoke ASTRAL using the following command to make all the 3GB available to Java:
 
 ```
 java -Xmx3000M -D"java.library.path=lib/" -jar astral.<version_number>.jar -i input
 ```
 
 ### Search Space:
-For big datasets (say more than 5000 taxa), generating search space may take more than reasonable time. Reducing excessive search space can result in speedups. The search space can be controlled by placing [astral-pro.config](ASTRAL-MP/astral-pro.config) file in your working directory (the directory you get when you run `pwd`) and then changing values of `X`, `Y`, and `Z`. The file has the following format: 
+For big datasets (say more than 500 taxa), generating search space may take more than reasonable time. Reducing excessive search space can result in speedups. The search space can be controlled by placing [astral-pro.config](ASTRAL-MP/astral-pro.config) file in your working directory (the directory you get when you run `pwd`) and then changing values of `X`, `Y`, and `Z`. The file has the following format: 
 ```
 X 
 Y 
