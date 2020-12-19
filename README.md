@@ -97,7 +97,7 @@ X
 Y 
 Z
 ```
-Each multi-copy gene tree will be broken into `2^X` single-copy trees; only single-copy trees with more than `Y` leaves will be included in the search space and only single-copy trees with more than `Z` leaves will be used to generate extra search space. You reduce the search space, you want to increase `Y` and `Z` to be close to one third or half of the number of species you have. For example, for a dataset with 1200 species and 5000 genes, we used the following values with success. 
+Each multi-copy gene tree will be broken into `2^Z` single-copy trees; only single-copy trees with more than `X` leaves will be included in the search space and only single-copy trees with more than `Y` leaves will be used to generate extra search space. You reduce the search space, you want to increase `X` and `Y` to be close to one third or half of the number of species you have. For example, for a dataset with 1200 species and 5000 genes, we used the following values with success. 
 ```
 200
 100
