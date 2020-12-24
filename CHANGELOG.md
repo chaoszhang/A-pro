@@ -1,3 +1,5 @@
+*  1.1.4:
+	* Fix broken trees when input trees does not contain species-driven quartets
 *  1.1.3:
 	* Fixed overflow in support value computation
 	* Add customizable search space

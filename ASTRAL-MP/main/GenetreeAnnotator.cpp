@@ -613,15 +613,16 @@ tuple<string, string, stringstream*> annotate(string input, string mapping) {
 			ga.buildPolytree(iroot, pt);
 			cnt++;
 			auto trees = ga.breakGenetree(iroot);
-			for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= tx) sx += e.first + "\n";
-			for (string s: sample(trees, pw)) if (count(s.begin(), s.end(), ',') >= ti) sout += s + "\n";
+			for (auto e: trees) if (count(e.first.begin(), e.first.end(), '(') >= tx) sx += e.first + "\n";
+			for (string s: sample(trees, pw)) if (count(s.begin(), s.end(), '(') >= ti) sout += s + "\n";
 			if (cnt < thd){
-				for (auto e: trees) if (count(e.first.begin(), e.first.end(), ',') >= 3) sout += e.first + "\n";
+				for (auto e: trees) if (count(e.first.begin(), e.first.end(), '(') >= 3) sout += e.first + "\n";
 				auto treeswithoutgroup = ga.breakGenetree(iroot, true);
-				for (auto e: treeswithoutgroup) if (count(e.first.begin(), e.first.end(), ',') >= 3) sout += e.first + "\n";
+				for (auto e: treeswithoutgroup) if (count(e.first.begin(), e.first.end(), '(') >= 3) sout += e.first + "\n";
 			}
 		}
 	}
+	//cerr << "sx:\n" << sx << "\nsout\n" << sout << "\nspoly\n" << spoly << endl;
 	cerr << "The number of input tree read is " << cnt << endl;
 	pt.write(*spoly, ga.leafnames());
 	return make_tuple(sx, sout, spoly);
