@@ -93,7 +93,7 @@ struct Polytree{
 		#pragma vector aligned
 		for (int k = 0; k < BATCH_SIZE; k++){
 			result[k] = weight[k];
-		}//cerr << "result = " << result[0] << endl;
+		}
 	}
 	
 	unsigned long long count(){
@@ -126,6 +126,7 @@ struct Polytree{
 	}
 	
 	unsigned long long support(const unsigned long long* __restrict__ b) const{
+		cerr << "b:support ";
 		unsigned long long (*lst)[4] = new unsigned long long[listSize][4]{};
 		unsigned long long weight = 0;
 		
@@ -159,6 +160,7 @@ struct Polytree{
 		}
 		delete lst;
 		return weight;
+		cerr << "e:support ";
 	}
 } pt;
 

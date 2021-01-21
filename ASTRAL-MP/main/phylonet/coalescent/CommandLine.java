@@ -331,7 +331,9 @@ public class CommandLine {
 			// GlobalMaps.taxonIdentifier.taxonId("0");
 			// System.err.println("Main input file: "+config.getFile("input file"));
 			breakedTrees = Polytree.PTNative.cppParse(config.getString("input file"), config.getString("mapping file") == null ? "" : config.getString("mapping file"));
-			readInputTrees(mainTrees, readTreeFileAsString(breakedTrees[0]), rooted, true, false,
+			if (config.getFile("score species trees") == null) readInputTrees(mainTrees, readTreeFileAsString(breakedTrees[0]), rooted, true, false,
+					minleaves, config.getInt("branch annotation level"), null);
+			else readInputTrees(mainTrees, readTreeFileAsString(config.getFile("score species trees")), rooted, true, false,
 					minleaves, config.getInt("branch annotation level"), null);
 			System.err.println(mainTrees.size() + " trees read from " + config.getString("input file"));
 			GlobalMaps.taxonIdentifier.lock();
@@ -362,7 +364,7 @@ public class CommandLine {
 						false, null, 1, null);
 				System.err.println(extraTrees.size() + " extra trees read from " + config.getFile("extra trees"));
 			}
-			readInputTrees(extraTrees, readTreeFileAsString(breakedTrees[1]), extrarooted,
+			if (config.getFile("score species trees") == null) readInputTrees(extraTrees, readTreeFileAsString(breakedTrees[1]), extrarooted,
 					true, true, null, 1, null);
 			System.err.println(extraTrees.size() + " extra trees.");
 		} catch (IOException e) {
