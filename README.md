@@ -36,7 +36,7 @@ GeneA2 SpeciesA
 GeneB1 SpeciesB
 GeneC1 SpeciesC
 ```
-Taxon names cannot have quotation marks in their names (sorry!). This means you also cannot have weird characters like `?` or `|` in the name (underscore is fine).
+Taxon names cannot have quotation marks in their names (sorry!). This means you also cannot have weird characters like `?` or `|` in the name (underscore is fine).　A-pro is not designed for **polytomies** and will **randomly** resolve them during pre-processing.
 
 ## Output options
 The output in is Newick format and gives: 
