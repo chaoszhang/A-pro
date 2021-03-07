@@ -10,6 +10,9 @@ Chao Zhang, Celine Scornavacca, Erin K Molloy, Siavash Mirarab, ASTRAL-Pro: Quar
 
 - If you need to compile (you may not), you will also need JDK and g++ or icc (supporting c++11 standard)
 
+## C++ Equivalent
+A **faster** and **more accurate** version of A-pro is implemented in c++ [here](https://github.com/chaoszhang/ASTER/tree/9845fb7d597c69854958325736b31952739c94a5).
+
 ## Installation 
 
 Download:
@@ -113,8 +116,3 @@ ASTRAL code reuses code from ASTRAL-MP and bytecode and some reverse engineered 
 Bug Reports:
 -----------
 contact ``astral-users@googlegroups.com``
-
-
-Alternative:
------------
-If it is hard to install or run ASTRAL-Pro on your machine, you can try (unpublished) C++ version [here](https://github.com/chaoszhang/FEAST).
