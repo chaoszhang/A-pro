@@ -11,7 +11,7 @@ Chao Zhang, Celine Scornavacca, Erin K Molloy, Siavash Mirarab, ASTRAL-Pro: Quar
 - If you need to compile (you may not), you will also need JDK and g++ or icc (supporting c++11 standard)
 
 ## C++ Equivalent
-A **faster** and **more accurate** version of A-pro is implemented in c++ [here](https://github.com/chaoszhang/ASTER/tree/9845fb7d597c69854958325736b31952739c94a5).
+A **faster**, **more accurate**, and **easier to install** version of A-pro with **lower memory consumption** is implemented in c++ [here](https://github.com/chaoszhang/ASTER/tree/9845fb7d597c69854958325736b31952739c94a5).
 
 ## Installation 
 
