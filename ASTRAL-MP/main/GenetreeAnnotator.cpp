@@ -635,6 +635,16 @@ tuple<string, string, stringstream*> annotate(string input, string mapping) {
 	while (pos < TEXT.size()){
 		while (pos < TEXT.size() && TEXT[pos] != '(') pos++;
 		if (pos < TEXT.size()) {
+			int leafCnt = 1, internalCnt = 0;
+			for (int i = pos; i < TEXT.size() && TEXT[i] != ';'; i++){
+				if (TEXT[i] == '(') internalCnt++;
+				if (TEXT[i] == ',') leafCnt++;
+			}
+			if (internalCnt < leafCnt - 2) {
+				cerr << "Non-binary input tree(s) detected!\nCurrently ASTRAL-Pro does not guarentee correct output if input trees contain polytomies!";
+				exit(0);
+			}
+			
 			pos++;
 			unordered_map<long long, string> leafname;
 			unordered_map<long long, pair<long long, long long> > children;
