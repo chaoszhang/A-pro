@@ -5,13 +5,13 @@ ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs. ASTRAL is a tool for es
 
 Chao Zhang, Celine Scornavacca, Erin K Molloy, Siavash Mirarab, ASTRAL-Pro: Quartet-Based Species-Tree Inference despite Paralogy, Molecular Biology and Evolution, Volume 37, Issue 11, November 2020, Pages 3292–3307, https://doi.org/10.1093/molbev/msaa139
 
+## C++ Equivalent
+A **faster**, **more accurate**, and **easier to install** version of A-pro with **lower memory consumption** is implemented in c++ [here](https://github.com/chaoszhang/ASTER/blob/master/README/astral-pro.md).
+
 ## Required installations
 - Java (>=1.7)
 
 - If you need to compile (you may not), you will also need JDK and g++ or icc (supporting c++11 standard)
-
-## C++ Equivalent
-A **faster**, **more accurate**, and **easier to install** version of A-pro with **lower memory consumption** is implemented in c++ [here](https://github.com/chaoszhang/ASTER/blob/master/README/astral-pro.md).
 
 ## Installation 
 
