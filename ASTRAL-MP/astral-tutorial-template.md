@@ -14,7 +14,6 @@ Email: `astral-users@googlegroups.com` for questions. Please subscribe to the ma
   * [Running on the sample mammalian dataset](#running-on-the-sample-mammalian-dataset)
   * [Running on larger datasets:](#running-on-larger-datasets)
   * [Running with unresolved gene trees](#running-with-unresolved-gene-trees)
-  * [Running on a multi\-individual datasets](#running-on-a-multi-individual-datasets)
 * [Interpreting output](#interpreting-output)
   * [Viewing results of ASTRAL:](#viewing-results-of-astral)
   * [Branch length and support](#branch-length-and-support)
@@ -22,7 +21,6 @@ Email: `astral-users@googlegroups.com` for questions. Please subscribe to the ma
 * [Scoring existing trees](#scoring-existing-trees)
   * [Extensive branch annotations](#extensive-branch-annotations)
   * [Prior hyper\-parameter](#prior-hyper-parameter)
-* [Multi-locus Bootstrapping:](#multi-locus-bootstrapping)
 * [The Search space of ASTRAL](#the-search-space-of-astral)
   * [Exact version](#exact-version)
     * [Example where exact helps](#example-where-exact-helps)
@@ -114,25 +112,6 @@ java -Djava.library.path=./lib/ -jar __astral.jar__ -i test_data/1KP-genetrees-B
 ```
 
 Compare the species tree generated here with that generated with the fully resolved gene trees. You can confirm that the tree topology has not changed in this case, but the branch lengths and the branch support have all changed (and that they tend to both increase). By comparing the log files you can also see that after contracting low support branches, the normalized quartet score increases to 0.92321 (from 0.89467 with no contraction). This is expected as low support branches tend to increase not decrease discordance. 
-
-### Running on a multi-individual datasets
-
-When multiple individuals from the same species are available, to force the species to be monophyletic, a mapping file needs to be provided using the `-a` option. This mapping file should have one line per species, and each line needs to be in one of two formats:
-
-```
-species_name [number of individuals] individual_1 individual_2 ...
-
-species_name:individual_1,individual_2,...
-```
-Some rules about the mapping file:
-
-* When multiple individuals exist for the same species, your species names should be different from the individual names.
-* You cannot have empty names (e.g., `,,`)
-* The same individual name should not be mapped to multiple species
-* Each individual name should appear in at least one gene name
-
-We will soon add an example here. 
-
 
 Interpreting output
 -----
@@ -268,84 +247,6 @@ java -Djava.library.path=./lib/ -jar __astral.jar__ -q test_data/1kp.tre -i test
 
 Note that setting lambda to 0 results in reporting ML estimates of the branch lengths instead of MAP. However, for branches with no discordance, we cannot compute a branch lengths. For these, we currently arbitrarily set ML to 10 coalescent units (we might change this in future versions).
 
-
-Multi-locus Bootstrapping:
----
-ASTRAL outputs a branch support value even without bootstrapping. Our [analyses](http://mbe.oxfordjournals.org/content/early/2016/05/12/molbev.msw079.short?rss=1) show that this form of support is more reliable than bootstrapping (under the conditions we explored). Nevertheless, you may want to run bootstrapping. ASTRAL can perform multi-locus bootstrapping ([Seo, 2008](http://www.ncbi.nlm.nih.gov/pubmed/18281270)). 
-
-To be able to perform multi-locus bootstrapping, ASTRAL needs to have access to bootstrap replicate trees for each gene. 
-
-#### Example
-
-To start multi-locus bootstrapping using ASTRAL, you need to provide the location of all gene tree bootstrap replicates. To run bootstrapping on our test input files, 
-
-
-* go to `test_data` directory, and 
-* decompress the file called `song_mammals.424genes.bs-trees.zip`. 
-* Now run:
-
-```
-java -Djava.library.path=./lib/  -jar ../__astral.jar__ -i song_mammals.424.gene.tre -b bs-files -o song_mammals.bootstrapped.astral.tre
-```
-
-This will run 100 replicates of bootstrapping in addition to one run of ASTRAL on the main trees. 
-
-#### Input
-
-* The argument after `-i` (here `song_mammals.424.gene.tre`) contains all the maximum likelihood gene trees (just like the case where bootstrapping was not used). 
-* The `-b` option tells ASTRAL that bootstrapping needs to be performed. Following `-b` is the name of a file (here `bs-files`) that contains the **file path** of gene tree bootstrap files, one line per gene. Thus, the input file is **not** a file full of trees. It's a file full of paths of files full of trees.
-    * For example, the first line is `424genes/100/raxmlboot.gtrgamma/RAxML_bootstrap.allbs`, which tells ASTRAL that the gene tree bootstrap replicates of the first gene can be found in a file called `424genes/100/raxmlboot.gtrgamma/RAxML_bootstrap.allbs`. In this case, `bs-files` has 424 lines (the number of genes) and each file named in `bs-files` has 100 trees (the number of bootstrap replicates). 
-
-
-#### Output
-
-The output file (here, `song_mammals.bootstrapped.astral.tre`) includes:
-
-1. 100 bootstrapped replicate trees; each tree is the result of running ASTRAL on a set of bootstrap gene trees (one per gene).
-2. A greedy consensus of the 100 bootstrapped replicate trees; this tree has support values drawn on branches based on the bootstrap replicate trees. Support values show the percentage of bootstrap replicates that contain a branch.
-3. The “main” ASTRAL tree; this is the results of running ASTRAL on the `best_ml` input gene trees. This main tree also includes support values, which are again drawn based on the 100 bootstrap replicate trees.
-
-**Note**: Support values are shown as percentages, as opposed to local posterior probabilities that are shown as a number between 0 and 1. When you perform bootstrapping, local posterior probabilities are not computed. If you want those as well, use the output of bootstrapping as input to astral with `-q` to annotate branches with posterior probabilities (see [branch annotations](#extensive-branch-annotations)).
-
-As ASTRAL performs bootstrapping, it continually outputs the bootstrapped ASTRAL tree for each replicate. So, if the number of replicates is set to 100, it first outputs 100 trees. Then, it outputs a greedy consensus of all the 100 bootstrapped trees (with support drawn on branches). Finally, it performs the main analysis (i.e., on trees provided using `-i` option) and draws branch support on this main tree using the bootstrap replicates. Therefore, in this example, the output file will include 102 trees. 
-
-**What to use:** The most important tree is the tree outputted at the end; this is the ASTRAL tree on main input trees, with support values drawn based on bootstrap replicates. Our [analyses](https://academic.oup.com/sysbio/article-lookup/doi/10.1093/sysbio/syu063) have shown this tree to be better than the consensus tree in most cases.  
-
-
-#### Number of replicates 
-
-By default, ASTRAL performs 100 bootstrap replicates, but the `-r` option can be used to perform any number of replicates.
-**Note:**  when no `-r` is given, ASTRAL only performs 100 replicates regardless of the number of replicates in your bootstrapped gene trees.
-For example, 
-
-```
-java -Djava.library.path=./lib/ -jar ../__astral.jar__ -i song_mammals.424.gene.tre -b bs-files -r 150 -o song_mammals.bootstrapped.150.astral.tre
-```
-
-will do 150 replicates. Note that your input gene tree bootstrap files need to have enough bootstrap replicates for the number of replicates requested using `-r`. For example, if you have `-r 150`, each file listed in `bs-files` should contain at least 150 bootstrap replicates.
-
-
-
-#### Gene+site resampling:
-ASTRAL performs site-only resampling by default (see [Seo, 2008](http://www.ncbi.nlm.nih.gov/pubmed/18281270)). ASTRAL can also perform gene+site resampling, which can be activated with the `-g` option:
-
-```
-java -Djava.library.path=./lib/ -jar ../__astral.jar__ -i song_mammals.424.gene.tre -b bs-files -g -r 100 -o song_mammals.bootstrapped.gs.astral.tre
-```
-
-Note that when you perform gene/site resampling, you need more gene tree replicates than the number of multi-locus bootstrapping replicates you requested using `-r`. For example, if you have `-g -r 100`, you might need 150 replicates for some genes (and less than 100 replicates for other genes). This is because when genes are resampled, some genes will be sampled more often than others by chance.
-
-#### Gene-only resampling:
-ASTRAL can also perform gene-only bootstrapping using the `--gene-only` option. This form of bootstrapping requires only one input file, which is given using `-i`. Thus, for this, you don't need to use `-b`. The following performs bootstrapping by resampling genes in the input file:
-
-```
-java -Djava.library.path=./lib/ -jar ../__astral.jar__ -i song_mammals.424.gene.tre --gene-only -o song_mammals.bootstrapped.go.astral.tre
-```
-
-
-Finally, since bootstrapping involves a random process, a seed number can be provided to ASTRAL to ensure reproducibility. The seed number can be set using the `-s` option (by default 692 is used). 
-
-
 The Search space of ASTRAL
 ---
 
@@ -418,17 +319,6 @@ For big datasets (say more than 500 taxa) increasing the memory available to jav
 ```
 java -Xmx3000M -jar __astral.jar__ -i in.tree
 ```
-
-### Other options
-
-* `-m [a number]`: removes genes with less that the specified number of leaves in them. Thus, this is useful for requiring a certain level of taxon occupancy. 
-* `-k completed`: To build the set X (and *not* to score the species tree), ASTRAL internally completes the gene trees. To see these completed gene trees, run this option. This option is usable only when you also have `-o`.
-* `-k bootstraps` and `-k bootstraps_norun`: these options output the bootstrap replicate inputs to ASTRAL. These are useful if you want to run ASTRAL separately on each bootstrap replicate on a cluster. 
-* `-k searchspace_norun`: outputs the search space (constraint set X) and exits. 
-* `--polylimit`: when ASTRAL adds new bipartitions to its search space, it partially does so based on a quadratic number of resolutions per each polytomy on a greedy consensus of gene trees. This could be slow, and therefore, we limit it to small polytomies. If you like to increase or decrease the search space, adjusting this option helps. 
-* `--samplingrounds`: For multi-individual datasets, this option controls how many rounds of individual sampling is used in building the constraint set. Adjust to reduce/increase the search space for multi-individual datasets
-
-
 
 ### Acknowledgment
 
