@@ -1,12 +1,14 @@
 # A-pro
 ASTRAL-Pro stands for ASTRAL for PaRalogs and Orthologs. ASTRAL is a tool for estimating an unrooted species tree given a set of unrooted gene trees and is statistically consistent under the multi-species coalescent model (and thus is useful for handling incomplete lineage sorting, i.e., ILS). ASTRAL-pro extends ASTRAL to allow multi-copy genes. ASTRAL-pro finds the species tree that has the maximum number of shared induced quartet tree equivalent classes with the set of gene trees, subject to the constraint that the set of bipartitions in the species tree comes from a predefined set of bipartitions. Please see the paper below for the definition of the PL-quartet scores, which is what ASTRAL-Pro optimizes. We refer to the tool both as A-Pro and ASTRAL-Pro. 
 
-### Publication:
+### Publications:
+
+Chao Zhang, Siavash Mirarab, ASTRAL-Pro 2: ultrafast species tree reconstruction from multi-copy gene family trees, Bioinformatics, 2022, btac620, https://doi.org/10.1093/bioinformatics/btac620
 
 Chao Zhang, Celine Scornavacca, Erin K Molloy, Siavash Mirarab, ASTRAL-Pro: Quartet-Based Species-Tree Inference despite Paralogy, Molecular Biology and Evolution, Volume 37, Issue 11, November 2020, Pages 3292–3307, https://doi.org/10.1093/molbev/msaa139
 
-## C++ Equivalent
-An equally accurate yet **faster** and **easier to install** version of A-pro with **lower memory consumption** is implemented in c++ [here](https://github.com/chaoszhang/ASTER/blob/master/README/astral-pro.md).
+# *** IMPORTANT NOTICE: PLEASE READ ***
+ASTRAL-Pro2, an equally accurate yet **faster** and **easier to install** version of A-pro with **lower memory consumption** is implemented in c++ [here](https://github.com/chaoszhang/ASTER/blob/master/README/astral-pro.md) and published [here](https://doi.org/10.1093/bioinformatics/btac620). Please switch to ASTRAL-Pro2, as this version of ASTRAL-Pro will no longer be maintained!
 
 ## Required installations
 - Java (>=1.7)
