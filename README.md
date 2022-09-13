@@ -8,7 +8,7 @@ Chao Zhang, Siavash Mirarab, ASTRAL-Pro 2: ultrafast species tree reconstruction
 Chao Zhang, Celine Scornavacca, Erin K Molloy, Siavash Mirarab, ASTRAL-Pro: Quartet-Based Species-Tree Inference despite Paralogy, Molecular Biology and Evolution, Volume 37, Issue 11, November 2020, Pages 3292–3307, https://doi.org/10.1093/molbev/msaa139
 
 # *** IMPORTANT NOTICE: PLEASE READ ***
-ASTRAL-Pro2, an equally accurate yet **faster** and **easier to install** version of A-pro with **lower memory consumption** is implemented in c++ [here](https://github.com/chaoszhang/ASTER/blob/master/README/astral-pro.md) and published [here](https://doi.org/10.1093/bioinformatics/btac620). Please switch to ASTRAL-Pro2, as this version of ASTRAL-Pro will no longer be maintained!
+ASTRAL-Pro2, an equally accurate yet **faster** and **easier to install** version of A-pro with **lower memory consumption** is implemented in c++ [here](https://github.com/chaoszhang/ASTER/blob/master/tutorial/astral-pro.md) and published [here](https://doi.org/10.1093/bioinformatics/btac620). Please switch to ASTRAL-Pro2, as the current version of ASTRAL-Pro will no longer be maintained!
 
 ## Required installations
 - Java (>=1.7)
